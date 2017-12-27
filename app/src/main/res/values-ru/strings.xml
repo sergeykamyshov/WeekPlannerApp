@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Week Planner</string>
+
+    <!--Заголовки-->
+    <string name="title_next_week">Следующая неделя</string>
+    <string name="title_archive">Архив</string>
+    <string name="title_task">Задача</string>
+    <string name="title_set_card_title">Изменить заголовок</string>
+
+    <!--Меню навигации-->
+    <string name="nav_item_current_week">Текущая неделя</string>
+    <string name="nav_item_next_week">Следующая неделя</string>
+    <string name="nav_item_archive">Архив</string>
+    <string name="open_drawer">Открыть выдвижную панель</string>
+    <string name="close_drawer">Закрыть выдвижную панель</string>
+
+    <!--Меню-->
+    <string name="menu_delete_card">Удалить карточку</string>
+    <string name="menu_delete_task">Удалить задачу</string>
+    <string name="menu_select_week">Выбрать неделю</string>
+    <string name="menu_set_cart_title">Изменить заголовок</string>
+    <string name="menu_save_cart_title">Сохранить</string>
+    <string name="menu_save_task_title">Сохранить</string>
+
+    <!--Подсказки-->
+    <string name="hint_card_title">Заголовок</string>
+    <string name="hint_task">Задача</string>
+
+    <!--Пустые списки-->
+    <string name="empty_task_list">Нет задач</string>
+    <string name="empty_card_list">Нет карточек</string>
+</resources>
