@@ -19,8 +19,4 @@ public class WeekPlannerApplication extends Application {
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
     }
-
-    public static WeekPlannerApplication getInstance() {
-        return instance;
-    }
 }
