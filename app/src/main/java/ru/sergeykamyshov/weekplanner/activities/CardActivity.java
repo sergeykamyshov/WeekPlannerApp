@@ -28,9 +28,11 @@ public class CardActivity extends AppCompatActivity {
 
     public static final String EXTRA_CARD_ID = "cardId";
     public static final String EXTRA_CARD_TITLE = "cardTitle";
+    public static final String EXTRA_WEEK_START_DATE = "weekStartDate";
     public static final String EXTRA_WEEK_END_DATE = "weekEndDate";
     public static final String EXTRA_NEW_CARD_FLAG = "newCardFlag";
     public static final String EXTRA_ARCHIVE_FLAG = "archiveFlag";
+    public static final String EXTRA_NEXT_WEEK_FLAG = "nextWeekFlag";
 
     private CardRecyclerAdapter mAdapter;
     private Realm mRealm;
@@ -47,6 +49,8 @@ public class CardActivity extends AppCompatActivity {
         boolean isNewCard = intent.getBooleanExtra(EXTRA_NEW_CARD_FLAG, false);
         final boolean isArchive = intent.getBooleanExtra(EXTRA_ARCHIVE_FLAG, false);
         final Date weekEndDate = (Date) intent.getSerializableExtra(EXTRA_WEEK_END_DATE);
+        final boolean isNextWeek = intent.getBooleanExtra(EXTRA_NEXT_WEEK_FLAG, false);
+        final Date weekStartDate = (Date) intent.getSerializableExtra(EXTRA_WEEK_START_DATE);
 
         mRealm = Realm.getDefaultInstance();
         if (isNewCard) {
@@ -58,6 +62,8 @@ public class CardActivity extends AppCompatActivity {
                     Card card = realm.createObject(Card.class, mCardId);
                     if (isArchive) {
                         card.setCreationDate(weekEndDate);
+                    } else if (isNextWeek) {
+                        card.setCreationDate(weekStartDate);
                     }
                     realm.insertOrUpdate(card);
                 }
