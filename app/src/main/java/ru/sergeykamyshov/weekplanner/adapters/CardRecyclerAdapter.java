@@ -46,8 +46,20 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         return mTasks.size();
     }
 
+    /**
+     * Перемещает выбранную задачу в списке задач из позиции fromPosition на позицию toPosition
+     *
+     * @param fromPosition - позиция в списке откуда переместить
+     * @param toPosition   - позиция в списке куда переместить
+     */
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        Task movedTask = mTasks.remove(fromPosition);
+        mTasks.add(toPosition, movedTask);
+        realm.commitTransaction();
+
         notifyItemMoved(fromPosition, toPosition);
     }
 
