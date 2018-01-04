@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.adapters.CardRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelper;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_ID;
@@ -80,7 +82,7 @@ public class CardActivity extends AppCompatActivity {
             actionBar.setTitle(mCard != null ? mCard.getTitle() : "");
         }
 
-        // Устанавливаем адаптер
+        // Устанавлеиваем адаптр
         EmptyRecyclerView recyclerTasks = findViewById(R.id.recycler_tasks);
         recyclerTasks.setLayoutManager(new LinearLayoutManager(this));
         recyclerTasks.setEmptyView(findViewById(R.id.layout_empty_task_list));
@@ -96,6 +98,11 @@ public class CardActivity extends AppCompatActivity {
         });
         recyclerTasks.setAdapter(mAdapter);
         recyclerTasks.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        // Добавляем возможность перемещать задачи в списке
+        ItemTouchHelper.Callback itemTouchHelperCallback = new TaskItemTouchHelper(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerTasks);
     }
 
     @Override

@@ -15,8 +15,10 @@ import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.activities.OnTaskItemClickListener;
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelperAdapter;
 
-public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder> {
+public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder>
+        implements TaskItemTouchHelperAdapter {
 
     private Context mContext;
     private RealmList<Task> mTasks;
@@ -42,6 +44,11 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     @Override
     public int getItemCount() {
         return mTasks.size();
+    }
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        notifyItemMoved(fromPosition, toPosition);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
