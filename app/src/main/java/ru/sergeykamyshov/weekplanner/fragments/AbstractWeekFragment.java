@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -27,6 +29,16 @@ public abstract class AbstractWeekFragment extends Fragment {
     protected Date mWeekStartDate;
     protected Date mWeekEndDate;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Вычисляем дату начала и окончания недели
+        Date today = new Date();
+        mWeekStartDate = getWeekStartDate(today);
+        mWeekEndDate = getWeekEndDate(today);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,16 +49,7 @@ public abstract class AbstractWeekFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setEmptyView(view.findViewById(R.id.layout_empty_card_list));
 
-        mRealm = Realm.getDefaultInstance();
-        // Показываем неделю по умолчанию
-        Date today = new Date();
-        mWeekStartDate = getWeekStartDate(today);
-        mWeekEndDate = getWeekEndDate(today);
-        RealmResults<Card> cards = mRealm.where(Card.class)
-                .between("creationDate", mWeekStartDate, mWeekEndDate)
-                .findAll();
-
-        mWeekRecyclerAdapter = new WeekRecyclerAdapter(getContext(), cards);
+        mWeekRecyclerAdapter = new WeekRecyclerAdapter(getContext(), Collections.<Card>emptyList());
         recyclerView.setAdapter(mWeekRecyclerAdapter);
 
         // Добавляем возможность перемещать карточки в списке
@@ -61,9 +64,53 @@ public abstract class AbstractWeekFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Заполняет позиции карточек если их позиции в списке отличается от значения в поле "position"
+     *
+     * @param cards - список карточек
+     */
+    protected void fillCardsPositions(RealmResults<Card> cards) {
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = cards.get(i);
+            if (card.getPosition() != i) {
+                mRealm.beginTransaction();
+                card.setPosition(i);
+                mRealm.commitTransaction();
+            }
+        }
+    }
+
     abstract Date getWeekStartDate(Date date);
 
     abstract Date getWeekEndDate(Date date);
 
     abstract View.OnClickListener getOnFabClickListener();
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mRealm = Realm.getDefaultInstance();
+        RealmResults<Card> cards = mRealm.where(Card.class)
+                .between("creationDate", mWeekStartDate, mWeekEndDate)
+                .sort("position")
+                .findAll();
+
+        /**
+         * Зачем заполнять поле "position" когда сортировка уже выполнена?
+         * 1) В старых карточках позиция не была указана.
+         * 2) Если пользователь сменит Local, то день начала недели изменится и может получится так,
+         * что у карточек будут одинаковые позиции, а дальнейшее их перемещение только запутает все.
+         * Для таких ситуаций мы перезаполним поля сразу, чтобы в дальнейшем этого не требовалось.
+         */
+        fillCardsPositions(cards);
+
+        /**
+         * Почему не используем RealmResults в адаптере?
+         * RealmResults не позволяется динамически изменять список, т.к. там используются "живые объекты".
+         * Динамическое изменение списка нам нужно чтобы перемещать карточки.
+         */
+        List<Card> copyFromRealmCards = mRealm.copyFromRealm(cards);
+        mWeekRecyclerAdapter.setCards(copyFromRealmCards);
+    }
 }

@@ -12,6 +12,7 @@ import android.widget.DatePicker;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import io.realm.RealmResults;
 import ru.sergeykamyshov.weekplanner.R;
@@ -21,6 +22,7 @@ import ru.sergeykamyshov.weekplanner.utils.DateUtils;
 
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_ARCHIVE_FLAG;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_NEW_CARD_FLAG;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_POSITION;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_WEEK_END_DATE;
 
 public class ArchiveWeekFragment extends AbstractWeekFragment {
@@ -54,8 +56,11 @@ public class ArchiveWeekFragment extends AbstractWeekFragment {
                         mWeekEndDate = DateUtils.getWeekEndDate(calendar.getTime());
                         RealmResults<Card> cards = mRealm.where(Card.class)
                                 .between("creationDate", mWeekStartDate, mWeekEndDate)
+                                .sort("position")
                                 .findAll();
-                        mWeekRecyclerAdapter.setCards(cards);
+                        fillCardsPositions(cards);
+                        List<Card> copyFromRealmCards = mRealm.copyFromRealm(cards);
+                        mWeekRecyclerAdapter.setCards(copyFromRealmCards);
                     }
                 });
                 datePicker.show(getFragmentManager(), "datePicker");
@@ -82,6 +87,7 @@ public class ArchiveWeekFragment extends AbstractWeekFragment {
                 // Переходим к созданию новой карточки на выбранной неделе архива
                 Intent intent = new Intent(getContext(), CardActivity.class);
                 intent.putExtra(EXTRA_NEW_CARD_FLAG, true);
+                intent.putExtra(EXTRA_POSITION, mWeekRecyclerAdapter.getItemCount());
                 intent.putExtra(EXTRA_ARCHIVE_FLAG, true);
                 intent.putExtra(EXTRA_WEEK_END_DATE, mWeekEndDate);
                 getContext().startActivity(intent);

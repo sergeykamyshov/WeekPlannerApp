@@ -12,8 +12,9 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
+import java.util.List;
+
+import io.realm.Realm;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.activities.CardActivity;
 import ru.sergeykamyshov.weekplanner.model.Card;
@@ -26,28 +27,16 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
         implements CardItemTouchHelperAdapter {
 
     private Context mContext;
-    private RealmResults<Card> mCards;
+    private List<Card> mCards;
 
-    public WeekRecyclerAdapter(Context context, RealmResults<Card> cards) {
+    public WeekRecyclerAdapter(Context context, List<Card> cards) {
         mContext = context;
         mCards = cards;
-        addChangeListerForCards();
     }
 
-    public void setCards(RealmResults<Card> cards) {
+    public void setCards(List<Card> cards) {
         mCards = cards;
         notifyDataSetChanged();
-        addChangeListerForCards();
-    }
-
-    private void addChangeListerForCards() {
-        mCards.removeAllChangeListeners();
-        mCards.addChangeListener(new RealmChangeListener<RealmResults<Card>>() {
-            @Override
-            public void onChange(RealmResults<Card> cards) {
-                notifyDataSetChanged();
-            }
-        });
     }
 
     @Override
@@ -101,6 +90,26 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.beginTransaction();
+        // Удалем выбранную карточку из списка
+        Card movedCard = mCards.remove(fromPosition);
+        // Устанавливаем ей новую позицию
+        movedCard.setPosition(toPosition);
+        // Сохраняем изменения
+        realm.insertOrUpdate(movedCard);
+        // Добавляем в список на новую позицию
+        mCards.add(toPosition, movedCard);
+
+        // Получаем карту, которая были сдвинута
+        Card otherCard = mCards.get(fromPosition);
+        // Устанавливаем ей новую позицию
+        otherCard.setPosition(fromPosition);
+        // Сохраняем изменения
+        realm.insertOrUpdate(otherCard);
+        realm.commitTransaction();
+
         notifyItemMoved(fromPosition, toPosition);
     }
 

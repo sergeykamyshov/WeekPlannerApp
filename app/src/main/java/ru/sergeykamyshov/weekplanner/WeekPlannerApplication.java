@@ -4,6 +4,7 @@ import android.app.Application;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import ru.sergeykamyshov.weekplanner.database.RealmMigrationImpl;
 
 public class WeekPlannerApplication extends Application {
 
@@ -16,7 +17,8 @@ public class WeekPlannerApplication extends Application {
 
         Realm.init(instance);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
-                .schemaVersion(0)
+                .schemaVersion(1)
+                .migration(new RealmMigrationImpl())
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
     }

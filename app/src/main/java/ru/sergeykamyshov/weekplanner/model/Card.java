@@ -13,6 +13,7 @@ public class Card extends RealmObject {
     private String id = UUID.randomUUID().toString();
     private String title;
     private Date creationDate = new Date();
+    private int position;
     private RealmList<Task> tasks = new RealmList<>();
 
     public String getId() {
@@ -33,6 +34,14 @@ public class Card extends RealmObject {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public RealmList<Task> getTasks() {

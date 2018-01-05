@@ -33,6 +33,7 @@ public class CardActivity extends AppCompatActivity {
     public static final String EXTRA_WEEK_START_DATE = "weekStartDate";
     public static final String EXTRA_WEEK_END_DATE = "weekEndDate";
     public static final String EXTRA_NEW_CARD_FLAG = "newCardFlag";
+    public static final String EXTRA_POSITION = "position";
     public static final String EXTRA_ARCHIVE_FLAG = "archiveFlag";
     public static final String EXTRA_NEXT_WEEK_FLAG = "nextWeekFlag";
 
@@ -49,6 +50,7 @@ public class CardActivity extends AppCompatActivity {
         // Получаем данные из вызываемого интента
         Intent intent = getIntent();
         boolean isNewCard = intent.getBooleanExtra(EXTRA_NEW_CARD_FLAG, false);
+        final int position = intent.getIntExtra(EXTRA_POSITION, 0);
         final boolean isArchive = intent.getBooleanExtra(EXTRA_ARCHIVE_FLAG, false);
         final Date weekEndDate = (Date) intent.getSerializableExtra(EXTRA_WEEK_END_DATE);
         final boolean isNextWeek = intent.getBooleanExtra(EXTRA_NEXT_WEEK_FLAG, false);
@@ -62,6 +64,7 @@ public class CardActivity extends AppCompatActivity {
                 public void execute(Realm realm) {
                     mCardId = UUID.randomUUID().toString();
                     Card card = realm.createObject(Card.class, mCardId);
+                    card.setPosition(position);
                     if (isArchive) {
                         card.setCreationDate(weekEndDate);
                     } else if (isNextWeek) {

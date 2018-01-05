@@ -9,6 +9,7 @@ import ru.sergeykamyshov.weekplanner.activities.CardActivity;
 import ru.sergeykamyshov.weekplanner.utils.DateUtils;
 
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_NEW_CARD_FLAG;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_POSITION;
 
 public class CurrentWeekFragment extends AbstractWeekFragment {
 
@@ -34,6 +35,7 @@ public class CurrentWeekFragment extends AbstractWeekFragment {
                 // Переходим к созданию новой карточки
                 Intent intent = new Intent(getContext(), CardActivity.class);
                 intent.putExtra(EXTRA_NEW_CARD_FLAG, true);
+                intent.putExtra(EXTRA_POSITION, mWeekRecyclerAdapter.getItemCount());
                 getContext().startActivity(intent);
             }
         };
