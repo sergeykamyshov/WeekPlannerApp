@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import io.realm.RealmResults;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.adapters.WeekRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.model.Card;
+import ru.sergeykamyshov.weekplanner.utils.CardItemTouchHelper;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
 public abstract class AbstractWeekFragment extends Fragment {
@@ -46,6 +48,11 @@ public abstract class AbstractWeekFragment extends Fragment {
 
         mWeekRecyclerAdapter = new WeekRecyclerAdapter(getContext(), cards);
         recyclerView.setAdapter(mWeekRecyclerAdapter);
+
+        // Добавляем возможность перемещать карточки в списке
+        ItemTouchHelper.Callback itemTouchCallback = new CardItemTouchHelper(mWeekRecyclerAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         // Нажатие на FloatingActionButton создает новую карточку на выбранной неделе
         FloatingActionButton fab = view.findViewById(R.id.fab_add_card);

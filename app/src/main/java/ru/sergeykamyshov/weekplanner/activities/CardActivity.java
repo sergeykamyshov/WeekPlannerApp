@@ -100,8 +100,8 @@ public class CardActivity extends AppCompatActivity {
         recyclerTasks.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         // Добавляем возможность перемещать задачи в списке
-        ItemTouchHelper.Callback itemTouchHelperCallback = new TaskItemTouchHelper(mAdapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
+        ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         itemTouchHelper.attachToRecyclerView(recyclerTasks);
     }
 

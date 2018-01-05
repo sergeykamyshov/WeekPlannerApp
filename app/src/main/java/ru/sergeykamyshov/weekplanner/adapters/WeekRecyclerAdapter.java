@@ -18,10 +18,12 @@ import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.activities.CardActivity;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.utils.CardItemTouchHelperAdapter;
 
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_CARD_ID;
 
-public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapter.ViewHolder> {
+public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapter.ViewHolder>
+        implements CardItemTouchHelperAdapter {
 
     private Context mContext;
     private RealmResults<Card> mCards;
@@ -95,6 +97,11 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
         TextView taskTitle = view.findViewById(R.id.txt_task_title);
         taskTitle.setText(task.getTitle());
         linearLayout.addView(view);
+    }
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        notifyItemMoved(fromPosition, toPosition);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
