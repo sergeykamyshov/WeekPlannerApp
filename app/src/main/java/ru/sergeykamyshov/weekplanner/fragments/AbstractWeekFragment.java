@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,22 +65,6 @@ public abstract class AbstractWeekFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Заполняет позиции карточек если их позиции в списке отличается от значения в поле "position"
-     *
-     * @param cards - список карточек
-     */
-    protected void fillCardsPositions(RealmResults<Card> cards) {
-        for (int i = 0; i < cards.size(); i++) {
-            Card card = cards.get(i);
-            if (card.getPosition() != i) {
-                mRealm.beginTransaction();
-                card.setPosition(i);
-                mRealm.commitTransaction();
-            }
-        }
-    }
-
     abstract Date getWeekStartDate(Date date);
 
     abstract Date getWeekEndDate(Date date);
@@ -91,10 +76,13 @@ public abstract class AbstractWeekFragment extends Fragment {
         super.onResume();
 
         mRealm = Realm.getDefaultInstance();
+        // Получаем список карточек отсортированные по указанной позиции
         RealmResults<Card> cards = mRealm.where(Card.class)
                 .between("creationDate", mWeekStartDate, mWeekEndDate)
                 .sort("position")
                 .findAll();
+
+        removeEmptyCards(cards);
 
         /**
          * Зачем заполнять поле "position" когда сортировка уже выполнена?
@@ -112,5 +100,37 @@ public abstract class AbstractWeekFragment extends Fragment {
          */
         List<Card> copyFromRealmCards = mRealm.copyFromRealm(cards);
         mWeekRecyclerAdapter.setCards(copyFromRealmCards);
+    }
+
+    /**
+     * Удаляет карточки у которых нет заголовка и отсутствуют задачи
+     *
+     * @param cards - список карточек
+     */
+    private void removeEmptyCards(RealmResults<Card> cards) {
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = cards.get(i);
+            if (TextUtils.isEmpty(card.getTitle()) && card.getTasks().isEmpty()) {
+                mRealm.beginTransaction();
+                card.deleteFromRealm();
+                mRealm.commitTransaction();
+            }
+        }
+    }
+
+    /**
+     * Заполняет поле "position" у карточек если их позиции в списке отличается от значения в поле.
+     *
+     * @param cards - список карточек
+     */
+    protected void fillCardsPositions(RealmResults<Card> cards) {
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = cards.get(i);
+            if (card.getPosition() != i) {
+                mRealm.beginTransaction();
+                card.setPosition(i);
+                mRealm.commitTransaction();
+            }
+        }
     }
 }

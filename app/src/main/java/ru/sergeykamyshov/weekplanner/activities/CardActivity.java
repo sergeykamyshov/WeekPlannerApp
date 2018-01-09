@@ -120,20 +120,6 @@ public class CardActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Удаляем пустую карточку
-        mRealm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                if (mCard.isValid() && (mCard.getTitle() == null || mCard.getTitle().isEmpty()) && mCard.getTasks().isEmpty()) {
-                    mCard.deleteFromRealm();
-                }
-            }
-        });
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_card, menu);
         return super.onCreateOptionsMenu(menu);
