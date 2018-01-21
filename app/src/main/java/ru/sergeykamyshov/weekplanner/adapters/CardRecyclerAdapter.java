@@ -73,12 +73,16 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         CheckBox mIsDone;
         TextView mTaskTitle;
         ImageView mMoreImg;
+        public View mViewForeground;
+        public View mViewBackground;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mIsDone = itemView.findViewById(R.id.cb_is_done);
             mTaskTitle = itemView.findViewById(R.id.txt_task_title);
             mMoreImg = itemView.findViewById(R.id.img_more);
+            mViewForeground = itemView.findViewById(R.id.layout_task_foreground);
+            mViewBackground = itemView.findViewById(R.id.layout_task_background);
         }
 
         public void bind(final Task task, OnTaskItemClickListener onTaskItemClickListener) {

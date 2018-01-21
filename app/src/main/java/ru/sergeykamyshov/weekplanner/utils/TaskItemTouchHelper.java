@@ -1,7 +1,11 @@
 package ru.sergeykamyshov.weekplanner.utils;
 
+import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.View;
+
+import ru.sergeykamyshov.weekplanner.adapters.CardRecyclerAdapter;
 
 public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
 
@@ -40,4 +44,11 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
+
+    @Override
+    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        View foregroundView = ((CardRecyclerAdapter.ViewHolder) viewHolder).mViewForeground;
+        getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive);
+    }
+
 }

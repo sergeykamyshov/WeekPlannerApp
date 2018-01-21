@@ -8,4 +8,5 @@
     <color name="week_card_task_text_color">#212121</color>
 
     <color name="card_task_text_color">#212121</color>
+    <color name="card_task_swipe_background">#ECEFF1</color>
 </resources>

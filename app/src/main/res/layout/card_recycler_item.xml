@@ -1,47 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="4dp"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
-    android:paddingTop="4dp">
+    android:layout_height="wrap_content">
 
-    <CheckBox
-        android:id="@+id/cb_is_done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/txt_task_title"
-        app:layout_constraintStart_toStartOf="parent"/>
+    <!--Layout который становится виден при свайпе задачи-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_task_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/card_task_swipe_background">
 
-    <TextView
-        android:id="@+id/txt_task_title"
-        style="@style/CardTask"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/img_more"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/cb_is_done"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Long long long long long long long long long long long long long long text"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_delete_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    <ImageView
-        android:id="@+id/img_more"
-        android:layout_width="wrap_content"
+    </android.support.constraint.ConstraintLayout>
+
+    <!--Основной Layout с которым взаимодействует пользователь-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_task_foreground"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:padding="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_chevron_right_black_24dp"/>
-</android.support.constraint.ConstraintLayout>
+        android:background="@android:color/white"
+        android:paddingBottom="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="4dp"
+        android:visibility="visible">
+
+        <CheckBox
+            android:id="@+id/cb_is_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/txt_task_title"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/txt_task_title"
+            style="@style/CardTask"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/img_more"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/cb_is_done"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Long long long long long long long long long long long long long long text"/>
+
+        <ImageView
+            android:id="@+id/img_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_chevron_right_black_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>
