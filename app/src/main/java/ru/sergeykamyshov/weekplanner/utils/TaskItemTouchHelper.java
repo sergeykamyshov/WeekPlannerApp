@@ -17,9 +17,14 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
     }
 
     @Override
+    public boolean isItemViewSwipeEnabled() {
+        return true;
+    }
+
+    @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-        int swipeFlags = 0;
+        int swipeFlags = ItemTouchHelper.START;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
 
@@ -33,6 +38,6 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
+        mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 }

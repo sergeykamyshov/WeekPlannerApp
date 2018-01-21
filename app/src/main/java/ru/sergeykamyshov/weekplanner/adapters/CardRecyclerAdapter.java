@@ -2,6 +2,7 @@ package ru.sergeykamyshov.weekplanner.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +47,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         return mTasks.size();
     }
 
-    /**
-     * Перемещает выбранную задачу в списке задач из позиции fromPosition на позицию toPosition
-     *
-     * @param fromPosition - позиция в списке откуда переместить
-     * @param toPosition   - позиция в списке куда переместить
-     */
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
         Realm realm = Realm.getDefaultInstance();
@@ -61,6 +56,16 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         realm.commitTransaction();
 
         notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        mTasks.remove(position);
+        realm.commitTransaction();
+
+        notifyItemRemoved(position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
