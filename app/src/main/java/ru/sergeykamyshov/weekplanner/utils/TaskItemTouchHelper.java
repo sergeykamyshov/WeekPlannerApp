@@ -50,6 +50,7 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             CardRecyclerAdapter.ViewHolder recyclerViewHolder = (CardRecyclerAdapter.ViewHolder) viewHolder;
 
+            // Делаем активным background только в случае свайпа
             View backgroundView = recyclerViewHolder.mViewBackground;
             backgroundView.setVisibility(View.VISIBLE);
 
@@ -60,4 +61,10 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
         }
     }
 
+    @Override
+    public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        CardRecyclerAdapter.ViewHolder recyclerViewHolder = (CardRecyclerAdapter.ViewHolder) viewHolder;
+        View foregroundView = recyclerViewHolder.mViewForeground;
+        getDefaultUIUtil().clearView(foregroundView);
+    }
 }
