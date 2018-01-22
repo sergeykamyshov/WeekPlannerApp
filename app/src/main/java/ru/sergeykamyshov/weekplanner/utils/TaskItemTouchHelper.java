@@ -47,8 +47,17 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
 
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        View foregroundView = ((CardRecyclerAdapter.ViewHolder) viewHolder).mViewForeground;
-        getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive);
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            CardRecyclerAdapter.ViewHolder recyclerViewHolder = (CardRecyclerAdapter.ViewHolder) viewHolder;
+
+            View backgroundView = recyclerViewHolder.mViewBackground;
+            backgroundView.setVisibility(View.VISIBLE);
+
+            View foregroundView = recyclerViewHolder.mViewForeground;
+            getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive);
+        } else {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
     }
 
 }

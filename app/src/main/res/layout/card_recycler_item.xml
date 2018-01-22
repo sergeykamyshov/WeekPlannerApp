@@ -9,6 +9,7 @@
     <!--Layout который становится виден при свайпе задачи-->
     <android.support.constraint.ConstraintLayout
         android:id="@+id/layout_task_background"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/card_task_swipe_background">
