@@ -3,6 +3,7 @@ package ru.sergeykamyshov.weekplanner.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -22,11 +23,12 @@ import ru.sergeykamyshov.weekplanner.adapters.CardRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelper;
+import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelperAdapter;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_ID;
 
-public class CardActivity extends AppCompatActivity {
+public class CardActivity extends AppCompatActivity implements TaskItemTouchHelperAdapter {
 
     public static final String EXTRA_CARD_ID = "cardId";
     public static final String EXTRA_CARD_TITLE = "cardTitle";
@@ -41,6 +43,7 @@ public class CardActivity extends AppCompatActivity {
     private Realm mRealm;
     private Card mCard;
     private String mCardId;
+    private EmptyRecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,10 +88,13 @@ public class CardActivity extends AppCompatActivity {
             actionBar.setTitle(mCard != null ? mCard.getTitle() : "");
         }
 
-        // Устанавлеиваем адаптр
-        EmptyRecyclerView recyclerTasks = findViewById(R.id.recycler_tasks);
-        recyclerTasks.setLayoutManager(new LinearLayoutManager(this));
-        recyclerTasks.setEmptyView(findViewById(R.id.layout_empty_task_list));
+        // Создаем и настраиваем RecyclerView
+        mRecyclerView = findViewById(R.id.recycler_tasks);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setEmptyView(findViewById(R.id.layout_empty_task_list));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        // Создаем и настраиваем адаптер
         mAdapter = new CardRecyclerAdapter(this, mCard.getTasks(), new OnTaskItemClickListener() {
             // Реализация обработчика нажатия задачи в списке
             @Override
@@ -99,13 +105,13 @@ public class CardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        recyclerTasks.setAdapter(mAdapter);
-        recyclerTasks.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        mRecyclerView.setAdapter(mAdapter);
+
 
         // Добавляем возможность перемещать задачи в списке
-        ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(mAdapter);
+        ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(this);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerTasks);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -162,5 +168,24 @@ public class CardActivity extends AppCompatActivity {
         Intent intent = new Intent(this, TaskActivity.class);
         intent.putExtra(TaskActivity.EXTRA_CARD_ID, mCardId);
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        mAdapter.onItemMove(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onItemDismiss(final int position) {
+        final Task removedTask = mAdapter.onItemDismiss(position);
+
+        Snackbar snackbar = Snackbar.make(mRecyclerView, getString(R.string.snackbar_task_deleted), Snackbar.LENGTH_SHORT);
+        snackbar.setAction(getString(R.string.snackbar_task_undo), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAdapter.insertItemToPosition(removedTask, position);
+            }
+        });
+        snackbar.show();
     }
 }

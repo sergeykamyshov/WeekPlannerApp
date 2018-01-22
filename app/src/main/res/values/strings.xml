@@ -29,4 +29,8 @@
     <!--Пустые списки-->
     <string name="empty_task_list">No tasks</string>
     <string name="empty_card_list">No cards</string>
+
+    <!--Snackbar-->
+    <string name="snackbar_task_deleted">Task deleted</string>
+    <string name="snackbar_task_undo">Undo</string>
 </resources>

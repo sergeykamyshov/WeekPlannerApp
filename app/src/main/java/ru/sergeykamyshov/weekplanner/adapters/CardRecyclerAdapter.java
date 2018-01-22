@@ -2,7 +2,6 @@ package ru.sergeykamyshov.weekplanner.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,8 @@ import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.activities.OnTaskItemClickListener;
 import ru.sergeykamyshov.weekplanner.model.Task;
-import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelperAdapter;
 
-public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder>
-        implements TaskItemTouchHelperAdapter {
+public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder> {
 
     private Context mContext;
     private RealmList<Task> mTasks;
@@ -47,7 +44,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         return mTasks.size();
     }
 
-    @Override
     public void onItemMove(int fromPosition, int toPosition) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
@@ -58,14 +54,23 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    @Override
-    public void onItemDismiss(int position) {
+    public Task onItemDismiss(int position) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        mTasks.remove(position);
+        Task removedTask = mTasks.remove(position);
         realm.commitTransaction();
 
         notifyItemRemoved(position);
+        return removedTask;
+    }
+
+    public void insertItemToPosition(Task task, int position) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        mTasks.add(position, task);
+        realm.commitTransaction();
+
+        notifyItemInserted(position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
