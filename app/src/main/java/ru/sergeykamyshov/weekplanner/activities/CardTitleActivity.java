@@ -9,36 +9,59 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import io.realm.Realm;
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.model.Card;
+import ru.sergeykamyshov.weekplanner.presenters.CardTitlePresenter;
 
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_CARD_ID;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_CARD_TITLE;
 
 public class CardTitleActivity extends AppCompatActivity {
 
-    private String mCardId;
-    private EditText mTitleEditText;
+    private CardTitlePresenter mPresenter;
+    private EditText mTitle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_title);
 
-        // Настраиваем ActionBar
+        setActionBar();
+        init();
+    }
+
+    private void setActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.title_set_card_title);
         }
+    }
+
+    private void init() {
+        mTitle = findViewById(R.id.txt_card_title);
 
         Intent intent = getIntent();
-        mCardId = intent.getStringExtra(EXTRA_CARD_ID);
+        String cardId = intent.getStringExtra(EXTRA_CARD_ID);
         String cardTitle = intent.getStringExtra(EXTRA_CARD_TITLE);
-        mTitleEditText = findViewById(R.id.txt_card_title);
-        mTitleEditText.setText(cardTitle);
-        mTitleEditText.setSelection(mTitleEditText.getText().length());
+
+        mPresenter = new CardTitlePresenter(cardId, cardTitle);
+        mPresenter.attachView(this);
+        mPresenter.viewReady();
+    }
+
+    public void setCardTitleOnOpen(String cardTitle) {
+        mTitle.setText(cardTitle);
+        mTitle.setSelection(mTitle.getText().length());
+    }
+
+    public String getCardTitle() {
+        return mTitle.getText().toString();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.detachView();
     }
 
     @Override
@@ -54,18 +77,7 @@ public class CardTitleActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.action_save_card_title:
-                final String cardTitle = mTitleEditText.getText().toString();
-                Realm realm = Realm.getDefaultInstance();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        Card card = realm.where(Card.class).equalTo("id", mCardId).findFirst();
-                        if (card != null) {
-                            card.setTitle(cardTitle);
-                            realm.insertOrUpdate(card);
-                        }
-                    }
-                });
+                mPresenter.saveCardTitle();
                 finish();
                 return true;
         }
