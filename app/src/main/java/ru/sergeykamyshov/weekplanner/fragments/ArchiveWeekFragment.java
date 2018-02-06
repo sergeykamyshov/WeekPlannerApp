@@ -16,7 +16,7 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.activities.CardActivity;
+import ru.sergeykamyshov.weekplanner.activities.CardTitleActivity;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.utils.DateUtils;
 
@@ -85,7 +85,8 @@ public class ArchiveWeekFragment extends AbstractWeekFragment {
             @Override
             public void onClick(View v) {
                 // Переходим к созданию новой карточки на выбранной неделе архива
-                Intent intent = new Intent(getContext(), CardActivity.class);
+                Intent intent = new Intent(getContext(), CardTitleActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 intent.putExtra(EXTRA_NEW_CARD_FLAG, true);
                 intent.putExtra(EXTRA_POSITION, mWeekRecyclerAdapter.getItemCount());
                 intent.putExtra(EXTRA_ARCHIVE_FLAG, true);

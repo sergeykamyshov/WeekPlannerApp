@@ -9,16 +9,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import java.util.Date;
+
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.presenters.CardTitlePresenter;
 
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_ARCHIVE_FLAG;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_CARD_ID;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_CARD_TITLE;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_NEW_CARD_FLAG;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_NEXT_WEEK_FLAG;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_POSITION;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_WEEK_END_DATE;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_WEEK_START_DATE;
 
 public class CardTitleActivity extends AppCompatActivity {
 
     private CardTitlePresenter mPresenter;
     private EditText mTitle;
+
+    // Intent Extras
+    private boolean mNewCardFlag;
+    private int mCardPosition;
+    private String mCardId;
+    private String mCardTitle;
+    private boolean mIsArchive;
+    private Date mWeekEndDate;
+    private boolean mIsNextWeek;
+    private Date mWeekStartDate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,23 +57,23 @@ public class CardTitleActivity extends AppCompatActivity {
 
     private void init() {
         mTitle = findViewById(R.id.txt_card_title);
+        getIntentExtras();
 
-        Intent intent = getIntent();
-        String cardId = intent.getStringExtra(EXTRA_CARD_ID);
-        String cardTitle = intent.getStringExtra(EXTRA_CARD_TITLE);
-
-        mPresenter = new CardTitlePresenter(cardId, cardTitle);
+        mPresenter = new CardTitlePresenter();
         mPresenter.attachView(this);
         mPresenter.viewReady();
     }
 
-    public void setCardTitleOnOpen(String cardTitle) {
-        mTitle.setText(cardTitle);
-        mTitle.setSelection(mTitle.getText().length());
-    }
-
-    public String getCardTitle() {
-        return mTitle.getText().toString();
+    private void getIntentExtras() {
+        Intent intent = getIntent();
+        mNewCardFlag = intent.getBooleanExtra(EXTRA_NEW_CARD_FLAG, false);
+        mCardPosition = intent.getIntExtra(EXTRA_POSITION, 0);
+        mCardId = intent.getStringExtra(EXTRA_CARD_ID);
+        mCardTitle = intent.getStringExtra(EXTRA_CARD_TITLE);
+        mIsArchive = intent.getBooleanExtra(EXTRA_ARCHIVE_FLAG, false);
+        mWeekEndDate = (Date) intent.getSerializableExtra(EXTRA_WEEK_END_DATE);
+        mIsNextWeek = intent.getBooleanExtra(EXTRA_NEXT_WEEK_FLAG, false);
+        mWeekStartDate = (Date) intent.getSerializableExtra(EXTRA_WEEK_START_DATE);
     }
 
     @Override
@@ -78,9 +96,54 @@ public class CardTitleActivity extends AppCompatActivity {
                 return true;
             case R.id.action_save_card_title:
                 mPresenter.saveCardTitle();
-                finish();
+
+                Intent intent = new Intent(this, CardActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.putExtra(EXTRA_CARD_ID, mCardId);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setCardTitleOnOpen() {
+        mTitle.setText(mCardTitle);
+        mTitle.setSelection(mTitle.getText().length());
+    }
+
+    public boolean isNewCardFlag() {
+        return mNewCardFlag;
+    }
+
+    public String getCardTitle() {
+        return mTitle.getText().toString();
+    }
+
+    public void setCardId(String cardId) {
+        mCardId = cardId;
+    }
+
+    public String getCardId() {
+        return mCardId;
+    }
+
+    public int getCardPosition() {
+        return mCardPosition;
+    }
+
+    public boolean isArchive() {
+        return mIsArchive;
+    }
+
+    public Date getWeekEndDate() {
+        return mWeekEndDate;
+    }
+
+    public boolean isNextWeek() {
+        return mIsNextWeek;
+    }
+
+    public Date getWeekStartDate() {
+        return mWeekStartDate;
     }
 }

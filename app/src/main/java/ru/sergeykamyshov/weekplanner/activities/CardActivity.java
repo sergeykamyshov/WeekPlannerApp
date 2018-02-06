@@ -13,9 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.Date;
-import java.util.UUID;
-
 import io.realm.Realm;
 import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
@@ -50,37 +47,6 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card);
 
-        // Получаем данные из вызываемого интента
-        Intent intent = getIntent();
-        boolean isNewCard = intent.getBooleanExtra(EXTRA_NEW_CARD_FLAG, false);
-        final int position = intent.getIntExtra(EXTRA_POSITION, 0);
-        final boolean isArchive = intent.getBooleanExtra(EXTRA_ARCHIVE_FLAG, false);
-        final Date weekEndDate = (Date) intent.getSerializableExtra(EXTRA_WEEK_END_DATE);
-        final boolean isNextWeek = intent.getBooleanExtra(EXTRA_NEXT_WEEK_FLAG, false);
-        final Date weekStartDate = (Date) intent.getSerializableExtra(EXTRA_WEEK_START_DATE);
-
-        mRealm = Realm.getDefaultInstance();
-        if (isNewCard) {
-            // Создаем новую карточку
-            mRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    mCardId = UUID.randomUUID().toString();
-                    Card card = realm.createObject(Card.class, mCardId);
-                    card.setPosition(position);
-                    if (isArchive) {
-                        card.setCreationDate(weekEndDate);
-                    } else if (isNextWeek) {
-                        card.setCreationDate(weekStartDate);
-                    }
-                    realm.insertOrUpdate(card);
-                }
-            });
-        } else {
-            mCardId = intent.getStringExtra(EXTRA_CARD_ID);
-        }
-        mCard = mRealm.where(Card.class).equalTo("id", mCardId).findFirst();
-
         // Настраиваем ActionBar
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -88,12 +54,17 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
             actionBar.setTitle(mCard != null ? mCard.getTitle() : "");
         }
 
+        Intent intent = getIntent();
+        mCardId = intent.getStringExtra(EXTRA_CARD_ID);
+
         // Создаем и настраиваем RecyclerView
         mRecyclerView = findViewById(R.id.recycler_tasks);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setEmptyView(findViewById(R.id.layout_empty_task_list));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
+        mRealm = Realm.getDefaultInstance();
+        mCard = mRealm.where(Card.class).equalTo("id", mCardId).findFirst();
         // Создаем и настраиваем адаптер
         mAdapter = new CardRecyclerAdapter(this, mCard.getTasks(), new OnTaskItemClickListener() {
             // Реализация обработчика нажатия задачи в списке
@@ -156,6 +127,7 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
                 return true;
             case R.id.action_set_card_title:
                 Intent intent = new Intent(this, CardTitleActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 intent.putExtra(EXTRA_CARD_ID, mCard.getId());
                 intent.putExtra(EXTRA_CARD_TITLE, mCard.getTitle());
                 startActivity(intent);
