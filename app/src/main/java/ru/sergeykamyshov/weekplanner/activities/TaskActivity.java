@@ -81,6 +81,7 @@ public class TaskActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.action_delete_task:
+                mPresenter.saveTaskDataToPrefs();
                 mPresenter.deleteTask();
                 finish();
                 return true;

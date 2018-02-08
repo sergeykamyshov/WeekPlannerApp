@@ -9,11 +9,14 @@ import io.realm.Realm;
 import ru.sergeykamyshov.weekplanner.activities.TaskActivity;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.utils.TaskSharedPreferencesUtils;
 
 public class TaskPresenter implements Presenter {
 
     private TaskActivity mView;
     private Realm mRealm = Realm.getDefaultInstance();
+    private TaskSharedPreferencesUtils mPreferencesUtils;
+
     private String mCardId;
     private String mTaskId;
 
@@ -25,6 +28,7 @@ public class TaskPresenter implements Presenter {
     @Override
     public void attachView(AppCompatActivity activity) {
         mView = (TaskActivity) activity;
+        mPreferencesUtils = new TaskSharedPreferencesUtils(mView);
     }
 
     @Override
@@ -92,6 +96,18 @@ public class TaskPresenter implements Presenter {
                 Task task = mRealm.where(Task.class).equalTo("id", mTaskId).findFirst();
                 if (task != null) {
                     task.deleteFromRealm();
+                }
+            }
+        });
+    }
+
+    public void saveTaskDataToPrefs() {
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Task task = mRealm.where(Task.class).equalTo("id", mTaskId).findFirst();
+                if (task != null) {
+                    mPreferencesUtils.saveData(mCardId, task);
                 }
             }
         });

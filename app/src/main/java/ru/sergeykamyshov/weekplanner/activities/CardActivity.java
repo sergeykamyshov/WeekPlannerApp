@@ -13,6 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.Map;
+import java.util.UUID;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
@@ -21,6 +24,7 @@ import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelper;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelperAdapter;
+import ru.sergeykamyshov.weekplanner.utils.TaskSharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_ID;
@@ -41,6 +45,7 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
     private Card mCard;
     private String mCardId;
     private EmptyRecyclerView mRecyclerView;
+    private TaskSharedPreferencesUtils mTaskSharedPreferencesUtils;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,11 +83,12 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         });
         mRecyclerView.setAdapter(mAdapter);
 
-
         // Добавляем возможность перемещать задачи в списке
         ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(this);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
+        mTaskSharedPreferencesUtils = new TaskSharedPreferencesUtils(this);
     }
 
     @Override
@@ -94,6 +100,41 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
             actionBar.setTitle(mCard.getTitle());
         }
         mAdapter.notifyDataSetChanged();
+
+        if (mTaskSharedPreferencesUtils.hasData()) {
+            Snackbar snackbar = Snackbar.make(mRecyclerView, getString(R.string.snackbar_task_deleted), Snackbar.LENGTH_LONG);
+            // Востанавливаем задачу если пользователь нажал "Отменить"
+            snackbar.setAction(getString(R.string.snackbar_task_undo), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Map<String, Object> data = mTaskSharedPreferencesUtils.getData();
+
+                    // Создаем новую задачу с ранее сохранеными данными
+                    mRealm.beginTransaction();
+                    Task task = mRealm.createObject(Task.class, UUID.randomUUID().toString());
+                    task.setTitle((String) data.get(TaskSharedPreferencesUtils.TASK_TITLE_PREF));
+                    task.setDone((Boolean) data.get(TaskSharedPreferencesUtils.TASK_IS_DONE_PREF));
+                    mRealm.commitTransaction();
+
+                    mAdapter.insertItemToPosition(task, mAdapter.getItemCount());
+                    // Костыль. Не разобрался почему при добавлении первой задачи RecyclerView не обновляется через notifyItemInserted
+                    if (mCard.getTasks().size() == 1) {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    mTaskSharedPreferencesUtils.clearData();
+                }
+            });
+            // Очищаем SharedPreferences если пользователь не востановил задачу
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar transientBottomBar, int event) {
+                    if (event != DISMISS_EVENT_ACTION) {
+                        mTaskSharedPreferencesUtils.clearData();
+                    }
+                }
+            });
+            snackbar.show();
+        }
     }
 
     @Override
