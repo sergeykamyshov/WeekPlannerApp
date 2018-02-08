@@ -15,6 +15,7 @@ public class TaskSharedPreferencesUtils {
     public static final String CARD_ID_PREF = "cardId";
     public static final String TASK_TITLE_PREF = "taskTitle";
     public static final String TASK_IS_DONE_PREF = "taskIsDone";
+    public static final String TASK_POSITION_PREF = "taskPosition";
 
     private AppCompatActivity mActivity;
 
@@ -22,12 +23,13 @@ public class TaskSharedPreferencesUtils {
         mActivity = activity;
     }
 
-    public void saveData(String cardId, Task task) {
+    public void saveData(String cardId, Task task, int position) {
         SharedPreferences prefs = mActivity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(CARD_ID_PREF, cardId);
         editor.putString(TASK_TITLE_PREF, task.getTitle());
         editor.putBoolean(TASK_IS_DONE_PREF, task.isDone());
+        editor.putInt(TASK_POSITION_PREF, position);
         editor.apply();
     }
 
@@ -43,6 +45,7 @@ public class TaskSharedPreferencesUtils {
         data.put(CARD_ID_PREF, prefs.getString(CARD_ID_PREF, ""));
         data.put(TASK_TITLE_PREF, prefs.getString(TASK_TITLE_PREF, ""));
         data.put(TASK_IS_DONE_PREF, prefs.getBoolean(TASK_IS_DONE_PREF, false));
+        data.put(TASK_POSITION_PREF, prefs.getInt(TASK_POSITION_PREF, 0));
         return data;
     }
 

@@ -16,13 +16,15 @@ public class TaskPresenter implements Presenter {
     private TaskActivity mView;
     private Realm mRealm = Realm.getDefaultInstance();
     private TaskSharedPreferencesUtils mPreferencesUtils;
-
     private String mCardId;
-    private String mTaskId;
 
-    public TaskPresenter(String cardId, String taskId) {
+    private String mTaskId;
+    private int mTaskPosition;
+
+    public TaskPresenter(String cardId, String taskId, int taskPosition) {
         mCardId = cardId;
         mTaskId = taskId;
+        mTaskPosition = taskPosition;
     }
 
     @Override
@@ -107,7 +109,7 @@ public class TaskPresenter implements Presenter {
             public void execute(Realm realm) {
                 Task task = mRealm.where(Task.class).equalTo("id", mTaskId).findFirst();
                 if (task != null) {
-                    mPreferencesUtils.saveData(mCardId, task);
+                    mPreferencesUtils.saveData(mCardId, task, mTaskPosition);
                 }
             }
         });

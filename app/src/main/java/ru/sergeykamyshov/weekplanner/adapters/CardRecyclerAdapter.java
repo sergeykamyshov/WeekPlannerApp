@@ -110,7 +110,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mOnTaskItemClickListener.onClick(task);
+                    mOnTaskItemClickListener.onClick(task, getAdapterPosition());
                 }
             });
         }

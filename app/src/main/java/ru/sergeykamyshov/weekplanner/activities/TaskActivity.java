@@ -17,6 +17,7 @@ public class TaskActivity extends AppCompatActivity {
 
     public static final String EXTRA_CARD_ID = "cardId";
     public static final String EXTRA_TASK_ID = "taskId";
+    public static final String EXTRA_TASK_POSITION = "taskPosition";
 
     private Realm mRealm;
     private TaskPresenter mPresenter;
@@ -46,8 +47,9 @@ public class TaskActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String cardId = intent.getStringExtra(EXTRA_CARD_ID);
         String taskId = intent.getStringExtra(EXTRA_TASK_ID);
+        int position = intent.getIntExtra(EXTRA_TASK_POSITION, 0);
 
-        mPresenter = new TaskPresenter(cardId, taskId);
+        mPresenter = new TaskPresenter(cardId, taskId, position);
         mPresenter.attachView(this);
         mPresenter.viewReady();
     }

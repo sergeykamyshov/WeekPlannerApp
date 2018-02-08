@@ -28,6 +28,7 @@ import ru.sergeykamyshov.weekplanner.utils.TaskSharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_ID;
+import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_POSITION;
 
 public class CardActivity extends AppCompatActivity implements TaskItemTouchHelperAdapter {
 
@@ -74,10 +75,11 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         mAdapter = new CardRecyclerAdapter(this, mCard.getTasks(), new OnTaskItemClickListener() {
             // Реализация обработчика нажатия задачи в списке
             @Override
-            public void onClick(Task task) {
+            public void onClick(Task task, int position) {
                 Intent intent = new Intent(CardActivity.this, TaskActivity.class);
                 intent.putExtra(EXTRA_CARD_ID, mCardId);
                 intent.putExtra(EXTRA_TASK_ID, task.getId());
+                intent.putExtra(EXTRA_TASK_POSITION, position);
                 startActivity(intent);
             }
         });
@@ -114,9 +116,10 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
                     Task task = mRealm.createObject(Task.class, UUID.randomUUID().toString());
                     task.setTitle((String) data.get(TaskSharedPreferencesUtils.TASK_TITLE_PREF));
                     task.setDone((Boolean) data.get(TaskSharedPreferencesUtils.TASK_IS_DONE_PREF));
+                    int position = (int) data.get(TaskSharedPreferencesUtils.TASK_POSITION_PREF);
                     mRealm.commitTransaction();
 
-                    mAdapter.insertItemToPosition(task, mAdapter.getItemCount());
+                    mAdapter.insertItemToPosition(task, position);
                     // Костыль. Не разобрался почему при добавлении первой задачи RecyclerView не обновляется через notifyItemInserted
                     if (mCard.getTasks().size() == 1) {
                         mAdapter.notifyDataSetChanged();
