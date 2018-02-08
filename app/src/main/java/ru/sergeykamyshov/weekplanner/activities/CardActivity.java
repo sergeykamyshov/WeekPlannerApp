@@ -53,13 +53,6 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card);
 
-        // Настраиваем ActionBar
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(mCard != null ? mCard.getTitle() : "");
-        }
-
         Intent intent = getIntent();
         mCardId = intent.getStringExtra(EXTRA_CARD_ID);
 
@@ -91,6 +84,13 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         mTaskSharedPreferencesUtils = new TaskSharedPreferencesUtils(this);
+
+        // Настраиваем ActionBar
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(mCard != null ? mCard.getTitle() : "");
+        }
     }
 
     @Override
