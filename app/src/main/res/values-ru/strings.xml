@@ -6,7 +6,7 @@
     <string name="title_next_week">Следующая неделя</string>
     <string name="title_archive">Архив</string>
     <string name="title_task">Задача</string>
-    <string name="title_set_card_title">Изменить заголовок</string>
+    <string name="title_card">Карточка</string>
 
     <!--Меню навигации-->
     <string name="nav_item_current_week">Текущая неделя</string>
@@ -19,7 +19,7 @@
     <string name="menu_delete_card">Удалить карточку</string>
     <string name="menu_delete_task">Удалить задачу</string>
     <string name="menu_select_week">Выбрать неделю</string>
-    <string name="menu_set_cart_title">Изменить заголовок</string>
+    <string name="menu_change_cart_title">Изменить заголовок</string>
     <string name="menu_save_cart_title">Сохранить</string>
     <string name="menu_save_task_title">Сохранить</string>
 

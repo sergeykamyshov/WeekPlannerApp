@@ -51,7 +51,7 @@ public class CardTitleActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(R.string.title_set_card_title);
+            actionBar.setTitle(R.string.title_card);
         }
     }
 

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_set_card_title"
-        android:title="@string/menu_set_cart_title"
+        android:title="@string/menu_change_cart_title"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_delete_card"

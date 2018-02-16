@@ -5,7 +5,7 @@
     <string name="title_next_week">Next week</string>
     <string name="title_archive">Archive</string>
     <string name="title_task">Task</string>
-    <string name="title_set_card_title">Set title</string>
+    <string name="title_card">Card</string>
 
     <!--Меню навигации-->
     <string name="nav_item_current_week">Current week</string>
@@ -18,7 +18,7 @@
     <string name="menu_delete_card">Delete card</string>
     <string name="menu_delete_task">Delete task</string>
     <string name="menu_select_week">Select week</string>
-    <string name="menu_set_cart_title">Set title</string>
+    <string name="menu_change_cart_title">Change title</string>
     <string name="menu_save_cart_title">Save</string>
     <string name="menu_save_task_title">Save</string>
 
