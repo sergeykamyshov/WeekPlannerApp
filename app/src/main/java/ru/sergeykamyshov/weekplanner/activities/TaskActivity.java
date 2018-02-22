@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import io.realm.Realm;
@@ -78,10 +79,6 @@ public class TaskActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_save_task:
-                mPresenter.saveTask();
-                finish();
-                return true;
             case R.id.action_delete_task:
                 mPresenter.saveTaskDataToPrefs();
                 mPresenter.deleteTask();
@@ -95,4 +92,12 @@ public class TaskActivity extends AppCompatActivity {
         return mTaskTitleEditText.getText().toString();
     }
 
+    public void cancelTaskAction(View view) {
+        onBackPressed();
+    }
+
+    public void saveTaskAction(View view) {
+        mPresenter.saveTask();
+        finish();
+    }
 }

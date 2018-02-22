@@ -23,6 +23,10 @@
     <string name="menu_save_cart_title">Сохранить</string>
     <string name="menu_save_task_title">Сохранить</string>
 
+    <!--Actions-->
+    <string name="task_action_cancel">Отмена</string>
+    <string name="task_action_save">Сохранить</string>
+
     <!--Подсказки-->
     <string name="hint_card_title">Заголовок</string>
     <string name="hint_task">Задача</string>
