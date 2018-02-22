@@ -26,6 +26,8 @@
     <!--Actions-->
     <string name="task_action_cancel">Отмена</string>
     <string name="task_action_save">Сохранить</string>
+    <string name="card_title_action_cancel">Отмена</string>
+    <string name="card_title_action_save">Сохранить</string>
 
     <!--Подсказки-->
     <string name="hint_card_title">Заголовок</string>

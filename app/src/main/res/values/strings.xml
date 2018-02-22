@@ -25,6 +25,8 @@
     <!--Actions-->
     <string name="task_action_cancel">Cancel</string>
     <string name="task_action_save">Save</string>
+    <string name="card_title_action_cancel">Cancel</string>
+    <string name="card_title_action_save">Save</string>
 
     <!--Подсказки-->
     <string name="hint_card_title">Title</string>

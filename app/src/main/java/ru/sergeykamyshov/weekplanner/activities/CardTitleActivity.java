@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import java.util.Date;
@@ -83,24 +83,10 @@ public class CardTitleActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_card_title, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                return true;
-            case R.id.action_save_card_title:
-                mPresenter.saveCardTitle();
-
-                Intent intent = new Intent(this, CardActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra(EXTRA_CARD_ID, mCardId);
-                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -109,6 +95,19 @@ public class CardTitleActivity extends AppCompatActivity {
     public void setCardTitleOnOpen() {
         mTitle.setText(mCardTitle);
         mTitle.setSelection(mTitle.getText().length());
+    }
+
+    public void cancelCardTitleAction(View view) {
+        onBackPressed();
+    }
+
+    public void saveCardTitleAction(View view) {
+        mPresenter.saveCardTitle();
+
+        Intent intent = new Intent(this, CardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra(EXTRA_CARD_ID, mCardId);
+        startActivity(intent);
     }
 
     public boolean isNewCardFlag() {
