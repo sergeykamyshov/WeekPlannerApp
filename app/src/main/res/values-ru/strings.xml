@@ -5,6 +5,7 @@
     <!--Заголовки-->
     <string name="title_next_week">Следующая неделя</string>
     <string name="title_archive">Архив</string>
+    <string name="title_about">О приложении</string>
     <string name="title_task">Задача</string>
     <string name="title_card">Карточка</string>
 
@@ -12,6 +13,7 @@
     <string name="nav_item_current_week">Текущая неделя</string>
     <string name="nav_item_next_week">Следующая неделя</string>
     <string name="nav_item_archive">Архив</string>
+    <string name="nav_item_about">О приложении</string>
     <string name="open_drawer">Открыть выдвижную панель</string>
     <string name="close_drawer">Закрыть выдвижную панель</string>
 
@@ -40,4 +42,17 @@
     <!--Snackbars-->
     <string name="snackbar_task_deleted">Задача удалена</string>
     <string name="snackbar_task_undo">Отменить</string>
+
+    <!--About-->
+    <string name="about_desc">
+        Основная задача приложения это позволить вам создавать 3-4 карточки с 2-3 задачами,
+        которые приблизят к достижению цели. Это своего рода техника Стивена Кови.\n
+        \n
+        Приложение было создано, чтобы:\n
+        1) планировать неделю\n
+        2) анализировать что сделано, а что нет\n
+        3) иметь историю планирования
+    </string>
+    <string name="about_version">версия</string>
+    <string name="about_copyrights">2018, Сергей Камышов, Все права защищены</string>
 </resources>

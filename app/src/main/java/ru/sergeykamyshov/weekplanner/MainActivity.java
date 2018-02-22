@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
+import ru.sergeykamyshov.weekplanner.fragments.AboutFragment;
 import ru.sergeykamyshov.weekplanner.fragments.ArchiveWeekFragment;
 import ru.sergeykamyshov.weekplanner.fragments.CurrentWeekFragment;
 import ru.sergeykamyshov.weekplanner.fragments.NextWeekFragment;
@@ -99,6 +100,13 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.frame_content, ArchiveWeekFragment.newInstance())
+                            .commit();
+                    break;
+                case R.id.nav_item_about:
+                    setTitle(getString(R.string.title_about));
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.frame_content, AboutFragment.newInstance())
                             .commit();
                     break;
             }

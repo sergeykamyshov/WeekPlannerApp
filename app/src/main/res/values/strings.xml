@@ -4,6 +4,7 @@
     <!--Заголовки-->
     <string name="title_next_week">Next week</string>
     <string name="title_archive">Archive</string>
+    <string name="title_about">About app</string>
     <string name="title_task">Task</string>
     <string name="title_card">Card</string>
 
@@ -11,6 +12,7 @@
     <string name="nav_item_current_week">Current week</string>
     <string name="nav_item_next_week">Next week</string>
     <string name="nav_item_archive">Archive</string>
+    <string name="nav_item_about">About app</string>
     <string name="open_drawer">Open drawer</string>
     <string name="close_drawer">Close drawer</string>
 
@@ -39,4 +41,18 @@
     <!--Snackbar-->
     <string name="snackbar_task_deleted">Task deleted</string>
     <string name="snackbar_task_undo">Undo</string>
+
+    <!--About-->
+    <string name="about_desc">
+        The main goal of the application is to allow you to create 3-4 cards with 2-3 tasks,
+        that will help you to approach goal for this week. It\'s kind of Stephen Covey technique.\n
+        \n
+        The app was created because I needed:\n
+        1) plan my week\n
+        2) analyze what was done\n
+        3) have a history of planning
+    </string>
+    <string name="about_version">version</string>
+    <string name="about_copyrights">2018, Sergey Kamyshov, All rights reserved</string>
+
 </resources>

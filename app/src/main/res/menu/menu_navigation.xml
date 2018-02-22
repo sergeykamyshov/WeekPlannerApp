@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/nav_group_main" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_item_current_week"
             android:checked="true"
@@ -17,5 +17,12 @@
             android:checked="true"
             android:icon="@drawable/ic_archive_black_24dp"
             android:title="@string/nav_item_archive"/>
+    </group>
+    <group android:id="@+id/nav_group_system" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_item_about"
+            android:checked="true"
+            android:icon="@drawable/ic_info_black_24dp"
+            android:title="@string/nav_item_about"/>
     </group>
 </menu>
