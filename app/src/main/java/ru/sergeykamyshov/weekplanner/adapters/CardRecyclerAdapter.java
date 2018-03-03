@@ -64,6 +64,19 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         return removedTask;
     }
 
+    public void onItemChecked(int position) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        Task task = mTasks.get(position);
+        if (task != null) {
+            boolean checked = task.isDone();
+            task.setDone(!checked);
+        }
+        realm.commitTransaction();
+
+        notifyItemChanged(position);
+    }
+
     public void insertItemToPosition(Task task, int position) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
@@ -75,11 +88,13 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        CheckBox mIsDone;
+        public CheckBox mIsDone;
         TextView mTaskTitle;
         ImageView mMoreImg;
         public View mViewForeground;
-        public View mViewBackground;
+        public View mViewBackgroundDone;
+        public View mViewBackgroundUndone;
+        public View mViewBackgroundRemove;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -87,7 +102,9 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             mTaskTitle = itemView.findViewById(R.id.txt_task_title);
             mMoreImg = itemView.findViewById(R.id.img_more);
             mViewForeground = itemView.findViewById(R.id.layout_task_foreground);
-            mViewBackground = itemView.findViewById(R.id.layout_task_background);
+            mViewBackgroundDone = itemView.findViewById(R.id.layout_task_done_background);
+            mViewBackgroundUndone = itemView.findViewById(R.id.layout_task_undone_background);
+            mViewBackgroundRemove = itemView.findViewById(R.id.layout_task_remove_background);
         }
 
         public void bind(final Task task, OnTaskItemClickListener onTaskItemClickListener) {

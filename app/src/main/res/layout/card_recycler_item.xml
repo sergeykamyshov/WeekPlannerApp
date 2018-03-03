@@ -6,13 +6,55 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--Layout который становится виден при свайпе задачи-->
+    <!--Background layout который виден при свайпе слева направо если задача не выполнена-->
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/layout_task_background"
-        android:visibility="gone"
+        android:id="@+id/layout_task_done_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/card_task_swipe_background">
+        android:background="@color/card_task_swipe_background"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_done_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!--Background layout который виден при свайпе слева направо если задача выполнена-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_task_undone_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/card_task_swipe_background"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_undo_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!--Background layout который виден при свайпе справа налево-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_task_remove_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/card_task_swipe_background"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="wrap_content"

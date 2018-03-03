@@ -216,4 +216,10 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         });
         snackbar.show();
     }
+
+    @Override
+    public void onItemChecked(int position) {
+        mAdapter.onItemChecked(position);
+    }
+
 }

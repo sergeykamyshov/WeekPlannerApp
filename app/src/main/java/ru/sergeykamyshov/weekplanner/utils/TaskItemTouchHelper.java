@@ -28,7 +28,7 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-        int swipeFlags = ItemTouchHelper.START;
+        int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
 
@@ -42,7 +42,11 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+        if (direction == ItemTouchHelper.START) {
+            mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+        } else if (direction == ItemTouchHelper.END) {
+            mAdapter.onItemChecked(viewHolder.getAdapterPosition());
+        }
     }
 
     @Override
@@ -50,9 +54,16 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             CardRecyclerAdapter.ViewHolder recyclerViewHolder = (CardRecyclerAdapter.ViewHolder) viewHolder;
 
-            // Делаем активным background только в случае свайпа
-            View backgroundView = recyclerViewHolder.mViewBackground;
-            backgroundView.setVisibility(View.VISIBLE);
+            // Если сдвигаем справа налево, то показываем что удаляем задачу
+            View backgroundRemove = recyclerViewHolder.mViewBackgroundRemove;
+            backgroundRemove.setVisibility(dX < 0 ? View.VISIBLE : View.INVISIBLE);
+
+            // Если сдвигаем слева направо, то показываем что меняем статус задачи
+            boolean taskDone = recyclerViewHolder.mIsDone.isChecked();
+            View backgroundDone = recyclerViewHolder.mViewBackgroundDone;
+            View backgroundUndone = recyclerViewHolder.mViewBackgroundUndone;
+            backgroundDone.setVisibility(dX > 0 && !taskDone ? View.VISIBLE : View.INVISIBLE);
+            backgroundUndone.setVisibility(dX > 0 && taskDone ? View.VISIBLE : View.INVISIBLE);
 
             View foregroundView = recyclerViewHolder.mViewForeground;
             getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive);

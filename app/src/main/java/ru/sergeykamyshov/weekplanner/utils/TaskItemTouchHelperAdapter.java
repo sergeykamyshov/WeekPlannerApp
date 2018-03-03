@@ -16,4 +16,11 @@ public interface TaskItemTouchHelperAdapter {
      * @param position - позиция задачи в списке
      */
     void onItemDismiss(int position);
+
+    /**
+     * Меняем признак выполнения задачи по позиции
+     *
+     * @param position - позиция задачи в списке
+     */
+    void onItemChecked(int position);
 }
