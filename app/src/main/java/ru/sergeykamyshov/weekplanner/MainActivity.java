@@ -15,17 +15,21 @@ import ru.sergeykamyshov.weekplanner.fragments.AboutFragment;
 import ru.sergeykamyshov.weekplanner.fragments.ArchiveWeekFragment;
 import ru.sergeykamyshov.weekplanner.fragments.CurrentWeekFragment;
 import ru.sergeykamyshov.weekplanner.fragments.NextWeekFragment;
+import ru.sergeykamyshov.weekplanner.utils.MainActivitySharedPreferencesUtils;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private ActionBarDrawerToggle mDrawerToggle;
+    private MainActivitySharedPreferencesUtils prefsUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        prefsUtils = new MainActivitySharedPreferencesUtils(this);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -51,10 +55,16 @@ public class MainActivity extends AppCompatActivity {
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_content, CurrentWeekFragment.newInstance())
-                .commit();
+        // При смене ориентации экрана, необходимо востанавливать текущий фрагмент
+        if (getSupportFragmentManager().findFragmentById(R.id.frame_content) != null) {
+            getSupportFragmentManager().popBackStack();
+            setTitle(prefsUtils.getTitleFromPrefs());
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.frame_content, CurrentWeekFragment.newInstance())
+                    .commit();
+        }
     }
 
     @Override
@@ -77,33 +87,38 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void setAndSaveTitle(String title) {
+        setTitle(title);
+        prefsUtils.writeTitleToPrefs(title);
+    }
+
     private class NavigationItemClickListener implements NavigationView.OnNavigationItemSelectedListener {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.nav_item_current_week:
-                    setTitle(getString(R.string.app_name));
+                    setAndSaveTitle(getString(R.string.app_name));
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.frame_content, CurrentWeekFragment.newInstance())
                             .commit();
                     break;
                 case R.id.nav_item_next_week:
-                    setTitle(getString(R.string.title_next_week));
+                    setAndSaveTitle(getString(R.string.title_next_week));
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.frame_content, NextWeekFragment.newInstance())
                             .commit();
                     break;
                 case R.id.nav_item_archive:
-                    setTitle(getString(R.string.title_archive));
+                    setAndSaveTitle(getString(R.string.title_archive));
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.frame_content, ArchiveWeekFragment.newInstance())
                             .commit();
                     break;
                 case R.id.nav_item_about:
-                    setTitle(getString(R.string.title_about));
+                    setAndSaveTitle(getString(R.string.title_about));
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.frame_content, AboutFragment.newInstance())
