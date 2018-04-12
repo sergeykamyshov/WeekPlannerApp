@@ -1,37 +1,12 @@
-## Welcome to GitHub Pages
+## Week Planner
 
-You can use the [editor on GitHub](https://github.com/sergeykamyshov/WeekPlannerApp/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Week Planner is an Android application that helps you to organize tasks by cards and plan your week.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The main goal of the application is to allow you to create 3-4 cards with 2-3 tasks, that will help you to approach goal for this week.
 
-### Markdown
+In the end of week check what was done and plan next week. 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+All your cards save to archive and you can review it anytime.
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/sergeykamyshov/WeekPlannerApp/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Week Planner is a personal project that I created for myself. 
+If you have an idea how improve the app, please give me feedback.
