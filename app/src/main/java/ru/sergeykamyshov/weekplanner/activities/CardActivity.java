@@ -13,24 +13,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.Map;
-import java.util.UUID;
-
-import io.realm.Realm;
-import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.adapters.CardRecyclerAdapter;
-import ru.sergeykamyshov.weekplanner.model.Card;
+import ru.sergeykamyshov.weekplanner.adapters.DataView;
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.presenters.CardPresenter;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelper;
-import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelperAdapter;
-import ru.sergeykamyshov.weekplanner.utils.TaskSharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_ID;
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_POSITION;
 
-public class CardActivity extends AppCompatActivity implements TaskItemTouchHelperAdapter {
+public class CardActivity extends AppCompatActivity {
 
     public static final String EXTRA_CARD_ID = "cardId";
     public static final String EXTRA_CARD_TITLE = "cardTitle";
@@ -41,20 +35,19 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
     public static final String EXTRA_ARCHIVE_FLAG = "archiveFlag";
     public static final String EXTRA_NEXT_WEEK_FLAG = "nextWeekFlag";
 
-    private CardRecyclerAdapter mAdapter;
-    private Realm mRealm;
-    private Card mCard;
+    private CardPresenter mPresenter;
+    private DataView mAdapter;
     private String mCardId;
     private EmptyRecyclerView mRecyclerView;
-    private TaskSharedPreferencesUtils mTaskSharedPreferencesUtils;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card);
 
-        Intent intent = getIntent();
-        mCardId = intent.getStringExtra(EXTRA_CARD_ID);
+        mCardId = getIntent().getStringExtra(EXTRA_CARD_ID);
+        mPresenter = new CardPresenter(mCardId);
+        mPresenter.attachView(this);
 
         // Создаем и настраиваем RecyclerView
         mRecyclerView = findViewById(R.id.recycler_tasks);
@@ -62,10 +55,8 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         mRecyclerView.setEmptyView(findViewById(R.id.layout_empty_task_list));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        mRealm = Realm.getDefaultInstance();
-        mCard = mRealm.where(Card.class).equalTo("id", mCardId).findFirst();
         // Создаем и настраиваем адаптер
-        mAdapter = new CardRecyclerAdapter(this, mCard.getTasks(), new OnTaskItemClickListener() {
+        CardRecyclerAdapter adapter = new CardRecyclerAdapter(this, mPresenter.getCard().getTasks(), new OnTaskItemClickListener() {
             // Реализация обработчика нажатия задачи в списке
             @Override
             public void onClick(Task task, int position) {
@@ -76,20 +67,21 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
                 startActivity(intent);
             }
         });
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(adapter);
+        mPresenter.setAdapter(adapter);
+        // Сохраняем ссылку на адаптер с интерфейсом DataView - для ограничения доступа
+        mAdapter = adapter;
 
         // Добавляем возможность перемещать задачи в списке
-        ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(this);
+        ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(mPresenter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
-
-        mTaskSharedPreferencesUtils = new TaskSharedPreferencesUtils(this);
 
         // Настраиваем ActionBar
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(mCard != null ? mCard.getTitle() : "");
+            actionBar.setTitle(mPresenter.getCard().getTitle());
         }
     }
 
@@ -99,49 +91,16 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         // Обновляем заголовок карточки
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mCard.getTitle());
+            actionBar.setTitle(mPresenter.getCard().getTitle());
         }
-        mAdapter.notifyDataSetChanged();
-
+        mAdapter.refresh();
         showUndoSnackbar();
     }
 
-    private void showUndoSnackbar() {
-        if (mTaskSharedPreferencesUtils.hasData()) {
-            Snackbar snackbar = Snackbar.make(mRecyclerView, getString(R.string.snackbar_task_deleted), Snackbar.LENGTH_LONG);
-            // Востанавливаем задачу если пользователь нажал "Отменить"
-            snackbar.setAction(getString(R.string.snackbar_task_undo), new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Map<String, Object> data = mTaskSharedPreferencesUtils.getData();
-
-                    // Создаем новую задачу с ранее сохранеными данными
-                    mRealm.beginTransaction();
-                    Task task = mRealm.createObject(Task.class, UUID.randomUUID().toString());
-                    task.setTitle((String) data.get(TaskSharedPreferencesUtils.TASK_TITLE_PREF));
-                    task.setDone((Boolean) data.get(TaskSharedPreferencesUtils.TASK_IS_DONE_PREF));
-                    int position = (int) data.get(TaskSharedPreferencesUtils.TASK_POSITION_PREF);
-                    mRealm.commitTransaction();
-
-                    mAdapter.insertItemToPosition(task, position);
-                    // Костыль. Не разобрался почему при добавлении первой задачи RecyclerView не обновляется через notifyItemInserted
-                    if (mCard.getTasks().size() == 1) {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                    mTaskSharedPreferencesUtils.clearData();
-                }
-            });
-            // Очищаем SharedPreferences если пользователь не востановил задачу
-            snackbar.addCallback(new Snackbar.Callback() {
-                @Override
-                public void onDismissed(Snackbar transientBottomBar, int event) {
-                    if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
-                        mTaskSharedPreferencesUtils.clearData();
-                    }
-                }
-            });
-            snackbar.show();
-        }
+    @Override
+    protected void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
     }
 
     @Override
@@ -157,27 +116,14 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
                 onBackPressed();
                 return true;
             case R.id.action_delete_card:
-                mRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        RealmList<Task> tasks = mCard.getTasks();
-                        // Удаляем все задачи, которые были внутри карточки
-                        for (int i = tasks.size() - 1; tasks.size() > 0; i--) {
-                            Task task = tasks.get(i);
-                            if (task != null) {
-                                task.deleteFromRealm();
-                            }
-                        }
-                        mCard.deleteFromRealm();
-                    }
-                });
+                mPresenter.deleteCard();
                 finish();
                 return true;
             case R.id.action_set_card_title:
                 Intent intent = new Intent(this, CardTitleActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                intent.putExtra(EXTRA_CARD_ID, mCard.getId());
-                intent.putExtra(EXTRA_CARD_TITLE, mCard.getTitle());
+                intent.putExtra(EXTRA_CARD_ID, mPresenter.getCard().getId());
+                intent.putExtra(EXTRA_CARD_TITLE, mPresenter.getCard().getTitle());
                 startActivity(intent);
                 return true;
         }
@@ -190,20 +136,27 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         startActivity(intent);
     }
 
-    @Override
-    public void onItemMove(int fromPosition, int toPosition) {
-        mAdapter.onItemMove(fromPosition, toPosition);
-    }
-
-    @Override
-    public void onItemDismiss(final int position) {
-        mAdapter.onItemDismiss(position);
-        showUndoSnackbar();
-    }
-
-    @Override
-    public void onItemChecked(int position) {
-        mAdapter.onItemChecked(position);
+    public void showUndoSnackbar() {
+        if (mPresenter.hasUndoData()) {
+            Snackbar snackbar = Snackbar.make(mRecyclerView, getString(R.string.snackbar_task_deleted), Snackbar.LENGTH_LONG);
+            // Востанавливаем задачу если пользователь нажал "Отменить"
+            snackbar.setAction(getString(R.string.snackbar_task_undo), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mPresenter.createTaskFromPrefs();
+                }
+            });
+            // Очищаем SharedPreferences если пользователь не востановил задачу
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar transientBottomBar, int event) {
+                    if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
+                        mPresenter.clearPrefs();
+                    }
+                }
+            });
+            snackbar.show();
+        }
     }
 
 }
