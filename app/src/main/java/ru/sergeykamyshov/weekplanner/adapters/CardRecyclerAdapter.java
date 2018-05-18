@@ -1,6 +1,7 @@
 package ru.sergeykamyshov.weekplanner.adapters;
 
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,17 +16,20 @@ import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.activities.OnTaskItemClickListener;
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.utils.TaskSharedPreferencesUtils;
 
 public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder> {
 
     private Context mContext;
     private RealmList<Task> mTasks;
     private OnTaskItemClickListener mOnTaskItemClickListener;
+    private TaskSharedPreferencesUtils mPreferencesUtils;
 
     public CardRecyclerAdapter(Context context, RealmList<Task> tasks, OnTaskItemClickListener onTaskItemClickListener) {
         mContext = context;
         mTasks = tasks;
         mOnTaskItemClickListener = onTaskItemClickListener;
+        mPreferencesUtils = new TaskSharedPreferencesUtils((AppCompatActivity) mContext);
     }
 
     @Override
@@ -54,14 +58,17 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    public Task onItemDismiss(int position) {
+    public void onItemDismiss(int position) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         Task removedTask = mTasks.remove(position);
+        mPreferencesUtils.saveData("", removedTask, position);
+        if (removedTask.isValid()) {
+            removedTask.deleteFromRealm();
+        }
         realm.commitTransaction();
 
         notifyItemRemoved(position);
-        return removedTask;
     }
 
     public void onItemChecked(int position) {

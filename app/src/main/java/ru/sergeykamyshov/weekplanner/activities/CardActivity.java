@@ -103,6 +103,10 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
         }
         mAdapter.notifyDataSetChanged();
 
+        showUndoSnackbar();
+    }
+
+    private void showUndoSnackbar() {
         if (mTaskSharedPreferencesUtils.hasData()) {
             Snackbar snackbar = Snackbar.make(mRecyclerView, getString(R.string.snackbar_task_deleted), Snackbar.LENGTH_LONG);
             // Востанавливаем задачу если пользователь нажал "Отменить"
@@ -193,28 +197,8 @@ public class CardActivity extends AppCompatActivity implements TaskItemTouchHelp
 
     @Override
     public void onItemDismiss(final int position) {
-        final Task removedTask = mAdapter.onItemDismiss(position);
-
-        Snackbar snackbar = Snackbar.make(mRecyclerView, getString(R.string.snackbar_task_deleted), Snackbar.LENGTH_LONG);
-        // Даем возможность пользователю востановить удаленную задачу
-        snackbar.setAction(getString(R.string.snackbar_task_undo), new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAdapter.insertItemToPosition(removedTask, position);
-            }
-        });
-        // Удаляем задачу из Realm если пользователь не востановил ее
-        snackbar.addCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar transientBottomBar, int event) {
-                if (event != DISMISS_EVENT_ACTION) {
-                    mRealm.beginTransaction();
-                    removedTask.deleteFromRealm();
-                    mRealm.commitTransaction();
-                }
-            }
-        });
-        snackbar.show();
+        mAdapter.onItemDismiss(position);
+        showUndoSnackbar();
     }
 
     @Override
