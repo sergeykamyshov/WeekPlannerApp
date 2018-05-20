@@ -99,6 +99,7 @@ public class CardActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        mPresenter.clearPrefs();
         mPresenter.detachView();
         super.onDestroy();
     }

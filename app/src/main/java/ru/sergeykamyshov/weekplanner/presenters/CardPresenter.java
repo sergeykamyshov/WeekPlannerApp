@@ -95,7 +95,7 @@ public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
     }
 
     public void clearPrefs() {
-        if (mView != null) {
+        if (mView != null && SharedPreferencesUtils.hasTaskData(mView)) {
             SharedPreferencesUtils.clearTaskData(mView);
         }
     }
