@@ -11,16 +11,15 @@ import ru.sergeykamyshov.weekplanner.activities.CardActivity;
 import ru.sergeykamyshov.weekplanner.adapters.CardRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelperAdapter;
-import ru.sergeykamyshov.weekplanner.utils.TaskSharedPreferencesUtils;
 
 public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
 
-    private CardActivity mActivity;
+    private CardActivity mView;
     private CardRecyclerAdapter mAdapter;
     private String mCardId;
     private Card mCard;
-    private TaskSharedPreferencesUtils mPrefs;
 
     public CardPresenter(String cardId) {
         mCardId = cardId;
@@ -28,8 +27,7 @@ public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
 
     @Override
     public void attachView(AppCompatActivity activity) {
-        mActivity = (CardActivity) activity;
-        mPrefs = new TaskSharedPreferencesUtils(mActivity);
+        mView = (CardActivity) activity;
     }
 
     @Override
@@ -39,9 +37,8 @@ public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
 
     @Override
     public void detachView() {
-        mPrefs = null;
         mAdapter = null;
-        mActivity = null;
+        mView = null;
     }
 
     public void setAdapter(CardRecyclerAdapter adapter) {
@@ -74,31 +71,33 @@ public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
     }
 
     public void createTaskFromPrefs() {
-        Map<String, Object> data = mPrefs.getData();
+        Map<String, Object> data = SharedPreferencesUtils.getTaskData(mView);
 
         // Создаем новую задачу с ранее сохранеными данными
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         Task task = realm.createObject(Task.class, UUID.randomUUID().toString());
-        task.setTitle((String) data.get(TaskSharedPreferencesUtils.TASK_TITLE_PREF));
-        task.setDone((Boolean) data.get(TaskSharedPreferencesUtils.TASK_IS_DONE_PREF));
+        task.setTitle((String) data.get(SharedPreferencesUtils.TASK_TITLE_PREF));
+        task.setDone((Boolean) data.get(SharedPreferencesUtils.TASK_IS_DONE_PREF));
         realm.commitTransaction();
 
-        int position = (int) data.get(TaskSharedPreferencesUtils.TASK_POSITION_PREF);
+        int position = (int) data.get(SharedPreferencesUtils.TASK_POSITION_PREF);
         mAdapter.insertItemToPosition(task, position);
         // Костыль. Не разобрался почему при добавлении первой задачи RecyclerView не обновляется через notifyItemInserted
         if (getCard().getTasks().size() == 1) {
             mAdapter.notifyDataSetChanged();
         }
-        mPrefs.clearData();
+        SharedPreferencesUtils.clearTaskData(mView);
     }
 
     public boolean hasUndoData() {
-        return mPrefs.hasData();
+        return SharedPreferencesUtils.hasTaskData(mView);
     }
 
     public void clearPrefs() {
-        mPrefs.clearData();
+        if (mView != null) {
+            SharedPreferencesUtils.clearTaskData(mView);
+        }
     }
 
     @Override
@@ -109,7 +108,7 @@ public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
     @Override
     public void onItemDismiss(final int position) {
         mAdapter.onItemDismiss(position);
-        mActivity.showUndoSnackbar();
+        mView.showUndoSnackbar();
     }
 
     @Override
