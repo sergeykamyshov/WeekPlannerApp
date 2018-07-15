@@ -20,6 +20,7 @@
     <!--Меню-->
     <string name="menu_import_card">Импортировать карточку</string>
     <string name="menu_delete_card">Удалить карточку</string>
+    <string name="menu_import_task">Импортировать задачу</string>
     <string name="menu_delete_task">Удалить задачу</string>
     <string name="menu_select_week">Выбрать неделю</string>
     <string name="menu_change_cart_title">Изменить заголовок</string>
@@ -57,9 +58,12 @@
     <string name="about_version">версия</string>
 
     <!--Dialog Import-->
-    <string-array name="action_import_weeks">
+    <string-array name="import_weeks">
         <item>@string/nav_item_current_week</item>
         <item>@string/nav_item_next_week</item>
         <item>@string/nav_item_archive</item>
     </string-array>
+    <string name="dialog_title_import_from">Импортировать из</string>
+    <string name="dialog_title_cards">Карточки</string>
+    <string name="dialog_title_tasks">Задачи</string>
 </resources>

@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,10 @@ import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
 
 public class CardPicker extends DialogFragment implements OnCardClickListener {
 
+    // Тип недели импорта: 0 - текущая, 1 - следующая, 2 - архив
     private int mWeekType = 0;
+    // Признак импорта задачи
+    private boolean mIsImportTask = false;
 
     @NonNull
     @Override
@@ -37,7 +41,10 @@ public class CardPicker extends DialogFragment implements OnCardClickListener {
 
         // Создаем разметку для диалога
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_import_card, null);
+        View view = inflater.inflate(R.layout.dialog_import, null);
+
+        TextView dialogTitle = view.findViewById(R.id.dialog_import_title);
+        dialogTitle.setText(R.string.dialog_title_cards);
 
         // Создаем и настраиваем адаптер
         ImportCardRecyclerAdapter adapter = new ImportCardRecyclerAdapter();
@@ -45,7 +52,7 @@ public class CardPicker extends DialogFragment implements OnCardClickListener {
         adapter.setListener(this);
 
         // Создаем и настраиваем RecyclerView
-        RecyclerView recycler = view.findViewById(R.id.recycler_import_cards);
+        RecyclerView recycler = view.findViewById(R.id.recycler_import);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         recycler.setAdapter(adapter);
 
@@ -53,10 +60,6 @@ public class CardPicker extends DialogFragment implements OnCardClickListener {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(view);
         return builder.create();
-    }
-
-    public void setWeekType(int weekType) {
-        mWeekType = weekType;
     }
 
     public List<Card> getCards() {
@@ -90,7 +93,25 @@ public class CardPicker extends DialogFragment implements OnCardClickListener {
     }
 
     @Override
-    public void onClick(Card card) {
+    public void onCardClick(Card card) {
+        if (mIsImportTask) {
+            createAndShowTaskPicker(card);
+        } else {
+            copyAndUpdateCard(card);
+        }
+    }
+
+    private void createAndShowTaskPicker(Card card) {
+        if (card.getTasks().isEmpty()) {
+            dismiss();
+        }
+        TaskPicker taskPicker = (TaskPicker) DialogFactory.getTaskPicker();
+        taskPicker.setImportCardId(card.getId());
+        taskPicker.show(getActivity().getSupportFragmentManager(), null);
+        dismiss();
+    }
+
+    private void copyAndUpdateCard(Card card) {
         // Копируем карточку
         Realm realm = Realm.getDefaultInstance();
         Card cardCopy = realm.copyFromRealm(card);
@@ -115,5 +136,13 @@ public class CardPicker extends DialogFragment implements OnCardClickListener {
         dismiss();
         // Просим фрагмент обновить список карточек
         getActivity().getSupportFragmentManager().getFragments().get(0).onResume();
+    }
+
+    public void setWeekType(int weekType) {
+        mWeekType = weekType;
+    }
+
+    public void setImportTask(boolean importTask) {
+        mIsImportTask = importTask;
     }
 }

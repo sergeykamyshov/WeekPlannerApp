@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.dialogs.OnCardClickListener;
-import ru.sergeykamyshov.weekplanner.model.Card;
+import ru.sergeykamyshov.weekplanner.dialogs.OnTaskClickListener;
+import ru.sergeykamyshov.weekplanner.model.Task;
 
-public class ImportCardRecyclerAdapter extends RecyclerView.Adapter<ImportCardRecyclerAdapter.ViewHolder> {
+public class ImportTaskRecyclerAdapter extends RecyclerView.Adapter<ImportTaskRecyclerAdapter.ViewHolder> {
 
-    private List<Card> mData = new ArrayList<>();
-    private OnCardClickListener mListener;
+    private List<Task> mData = new ArrayList<>();
+    private OnTaskClickListener mListener;
 
     @NonNull
     @Override
@@ -28,11 +28,11 @@ public class ImportCardRecyclerAdapter extends RecyclerView.Adapter<ImportCardRe
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        holder.cardTitle.setText(mData.get(position).getTitle());
+        holder.title.setText(mData.get(position).getTitle());
         holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onCardClick(mData.get(holder.getAdapterPosition()));
+                mListener.onTaskClick(mData.get(holder.getAdapterPosition()));
             }
         });
     }
@@ -42,22 +42,22 @@ public class ImportCardRecyclerAdapter extends RecyclerView.Adapter<ImportCardRe
         return mData.size();
     }
 
-    public void setData(List<Card> data) {
+    public void setData(List<Task> data) {
         mData = data;
     }
 
-    public void setListener(OnCardClickListener listener) {
+    public void setListener(OnTaskClickListener listener) {
         mListener = listener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ViewGroup container;
-        TextView cardTitle;
+        TextView title;
 
         public ViewHolder(View itemView) {
             super(itemView);
             container = itemView.findViewById(R.id.container_card_title);
-            cardTitle = itemView.findViewById(R.id.txt_card_title);
+            title = itemView.findViewById(R.id.txt_card_title);
         }
     }
 }

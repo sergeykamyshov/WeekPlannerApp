@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dialog_import_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:paddingBottom="16dp"
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp"
+        android:paddingTop="16dp"
+        android:text="@string/dialog_title_import_from"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        tools:text="Импортировать из"/>
+
+    <TextView
+        android:id="@+id/txt_current_week"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/nav_item_current_week"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:name="Текущая неделя"/>
+
+    <TextView
+        android:id="@+id/txt_next_week"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/nav_item_next_week"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:name="Следующая неделя"/>
+
+    <TextView
+        android:id="@+id/txt_archive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/nav_item_archive"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:name="Архив"/>
+
+</LinearLayout>

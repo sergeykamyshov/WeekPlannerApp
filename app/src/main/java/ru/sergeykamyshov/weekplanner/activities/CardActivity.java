@@ -16,8 +16,11 @@ import android.view.View;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.adapters.CardRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.adapters.DataView;
+import ru.sergeykamyshov.weekplanner.dialogs.DialogFactory;
+import ru.sergeykamyshov.weekplanner.dialogs.WeekPicker;
 import ru.sergeykamyshov.weekplanner.model.Task;
 import ru.sergeykamyshov.weekplanner.presenters.CardPresenter;
+import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelper;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
@@ -120,6 +123,13 @@ public class CardActivity extends AppCompatActivity {
                 mPresenter.deleteCard();
                 finish();
                 return true;
+            case R.id.action_import_task:
+                // Сохраняем id карточки в которую будем добавлять импортируемую задачу
+                SharedPreferencesUtils.saveCardIdForImportTask(this, mCardId);
+                WeekPicker weekPicker = (WeekPicker) DialogFactory.getWeekPicker();
+                weekPicker.setImportTask(true);
+                weekPicker.show(getSupportFragmentManager(), null);
+                return true;
             case R.id.action_set_card_title:
                 Intent intent = new Intent(this, CardTitleActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -158,6 +168,10 @@ public class CardActivity extends AppCompatActivity {
             });
             snackbar.show();
         }
+    }
+
+    public void updateList() {
+        mAdapter.refresh();
     }
 
 }

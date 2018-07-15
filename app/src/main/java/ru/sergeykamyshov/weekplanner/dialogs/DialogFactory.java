@@ -11,4 +11,8 @@ public class DialogFactory {
     public static DialogFragment getCardPicker() {
         return new CardPicker();
     }
+
+    public static DialogFragment getTaskPicker() {
+        return new TaskPicker();
+    }
 }
