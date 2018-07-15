@@ -18,6 +18,7 @@
     <string name="close_drawer">Закрыть выдвижную панель</string>
 
     <!--Меню-->
+    <string name="menu_import_card">Импортировать карточку</string>
     <string name="menu_delete_card">Удалить карточку</string>
     <string name="menu_delete_task">Удалить задачу</string>
     <string name="menu_select_week">Выбрать неделю</string>
@@ -54,4 +55,11 @@
         3) иметь историю планирования
     </string>
     <string name="about_version">версия</string>
+
+    <!--Dialog Import-->
+    <string-array name="action_import_weeks">
+        <item>@string/nav_item_current_week</item>
+        <item>@string/nav_item_next_week</item>
+        <item>@string/nav_item_archive</item>
+    </string-array>
 </resources>

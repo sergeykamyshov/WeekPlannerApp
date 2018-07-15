@@ -11,6 +11,7 @@ import ru.sergeykamyshov.weekplanner.utils.DateUtils;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_NEW_CARD_FLAG;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_NEXT_WEEK_FLAG;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_POSITION;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_WEEK_END_DATE;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_WEEK_START_DATE;
 
 public class NextWeekFragment extends AbstractWeekFragment {
@@ -41,6 +42,7 @@ public class NextWeekFragment extends AbstractWeekFragment {
                 intent.putExtra(EXTRA_POSITION, mWeekRecyclerAdapter.getItemCount());
                 intent.putExtra(EXTRA_NEXT_WEEK_FLAG, true);
                 intent.putExtra(EXTRA_WEEK_START_DATE, mWeekStartDate);
+                intent.putExtra(EXTRA_WEEK_END_DATE, mWeekEndDate);
                 getContext().startActivity(intent);
             }
         };

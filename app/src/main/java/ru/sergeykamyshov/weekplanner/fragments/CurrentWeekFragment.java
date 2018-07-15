@@ -5,12 +5,12 @@ import android.view.View;
 
 import java.util.Date;
 
-import ru.sergeykamyshov.weekplanner.activities.CardActivity;
 import ru.sergeykamyshov.weekplanner.activities.CardTitleActivity;
 import ru.sergeykamyshov.weekplanner.utils.DateUtils;
 
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_NEW_CARD_FLAG;
 import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_POSITION;
+import static ru.sergeykamyshov.weekplanner.activities.CardActivity.EXTRA_WEEK_END_DATE;
 
 public class CurrentWeekFragment extends AbstractWeekFragment {
 
@@ -38,6 +38,7 @@ public class CurrentWeekFragment extends AbstractWeekFragment {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 intent.putExtra(EXTRA_NEW_CARD_FLAG, true);
                 intent.putExtra(EXTRA_POSITION, mWeekRecyclerAdapter.getItemCount());
+                intent.putExtra(EXTRA_WEEK_END_DATE, mWeekEndDate);
                 getContext().startActivity(intent);
             }
         };

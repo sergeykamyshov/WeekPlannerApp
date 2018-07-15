@@ -17,6 +17,7 @@
     <string name="close_drawer">Close drawer</string>
 
     <!--Меню-->
+    <string name="menu_import_card">Import card</string>
     <string name="menu_delete_card">Delete card</string>
     <string name="menu_delete_task">Delete task</string>
     <string name="menu_select_week">Select week</string>
@@ -53,4 +54,11 @@
         3) have a history of planning
     </string>
     <string name="about_version">version</string>
+
+    <!--Dialog Import-->
+    <string-array name="action_import_weeks">
+        <item>@string/nav_item_current_week</item>
+        <item>@string/nav_item_next_week</item>
+        <item>@string/nav_item_archive</item>
+    </string-array>
 </resources>

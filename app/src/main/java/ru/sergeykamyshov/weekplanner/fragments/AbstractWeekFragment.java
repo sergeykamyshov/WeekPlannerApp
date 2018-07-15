@@ -4,10 +4,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,8 +24,10 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.adapters.WeekRecyclerAdapter;
+import ru.sergeykamyshov.weekplanner.dialogs.DialogFactory;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.utils.CardItemTouchHelper;
+import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
 
 public abstract class AbstractWeekFragment extends Fragment {
@@ -33,6 +40,7 @@ public abstract class AbstractWeekFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         // Вычисляем дату начала и окончания недели
         Date today = new Date();
@@ -65,6 +73,25 @@ public abstract class AbstractWeekFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_week_fragment, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_import_card:
+                FragmentActivity activity = getActivity();
+                // Сохраняем дату окончания выбранной недели, чтобы далее сохранить карточку с этой датой
+                SharedPreferencesUtils.saveWeekEndDate(activity, mWeekEndDate);
+                DialogFactory.getWeekPicker().show(activity.getSupportFragmentManager(), null);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     abstract Date getWeekStartDate(Date date);
 
     abstract Date getWeekEndDate(Date date);
@@ -74,6 +101,7 @@ public abstract class AbstractWeekFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.i("UpdateError", "AbstractWeekFragment. onResume()");
 
         mRealm = Realm.getDefaultInstance();
         // Получаем список карточек отсортированные по указанной позиции
