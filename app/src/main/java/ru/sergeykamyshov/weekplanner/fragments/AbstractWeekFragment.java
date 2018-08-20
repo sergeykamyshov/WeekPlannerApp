@@ -101,9 +101,16 @@ public abstract class AbstractWeekFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.i("UpdateError", "AbstractWeekFragment. onResume()");
 
-        mRealm = Realm.getDefaultInstance();
+        // Обработка ошибки, для которой пока нет решения в интернете
+        // Появляется преимущество на версии Android 6.0 и смартфонах Samsung
+        try {
+            mRealm = Realm.getDefaultInstance();
+        } catch (IllegalStateException e) {
+            Realm.init(getActivity().getApplicationContext());
+            mRealm = Realm.getDefaultInstance();
+        }
+
         // Получаем список карточек отсортированные по указанной позиции
         RealmResults<Card> cards = mRealm.where(Card.class)
                 .between("creationDate", mWeekStartDate, mWeekEndDate)
