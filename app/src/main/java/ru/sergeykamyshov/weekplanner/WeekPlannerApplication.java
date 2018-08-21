@@ -8,14 +8,11 @@ import ru.sergeykamyshov.weekplanner.database.RealmMigrationImpl;
 
 public class WeekPlannerApplication extends Application {
 
-    private static WeekPlannerApplication instance;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
 
-        Realm.init(instance);
+        Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
                 .schemaVersion(1)
                 .migration(new RealmMigrationImpl())

@@ -103,7 +103,7 @@ public abstract class AbstractWeekFragment extends Fragment {
         super.onResume();
 
         // Обработка ошибки, для которой пока нет решения в интернете
-        // Появляется преимущество на версии Android 6.0 и смартфонах Samsung
+        // Появляется преимущественно на версии Android 6.0 и смартфонах Samsung
         try {
             mRealm = Realm.getDefaultInstance();
         } catch (IllegalStateException e) {
