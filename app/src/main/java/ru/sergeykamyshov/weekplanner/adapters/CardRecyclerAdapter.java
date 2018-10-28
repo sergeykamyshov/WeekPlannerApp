@@ -15,7 +15,7 @@ import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.activities.OnTaskItemClickListener;
 import ru.sergeykamyshov.weekplanner.model.Task;
-import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 
 public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder> implements DataView {
 

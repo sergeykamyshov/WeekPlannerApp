@@ -11,7 +11,7 @@ import ru.sergeykamyshov.weekplanner.activities.CardActivity;
 import ru.sergeykamyshov.weekplanner.adapters.CardRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
-import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelperAdapter;
 
 public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {

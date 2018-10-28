@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,8 +26,8 @@ import ru.sergeykamyshov.weekplanner.adapters.WeekRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.dialogs.DialogFactory;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.utils.CardItemTouchHelper;
-import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
-import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
+import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.ui.custom.EmptyRecyclerView;
 
 public abstract class AbstractWeekFragment extends Fragment {
 

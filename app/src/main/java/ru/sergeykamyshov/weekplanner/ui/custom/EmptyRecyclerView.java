@@ -1,4 +1,4 @@
-package ru.sergeykamyshov.weekplanner.views;
+package ru.sergeykamyshov.weekplanner.ui.custom;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

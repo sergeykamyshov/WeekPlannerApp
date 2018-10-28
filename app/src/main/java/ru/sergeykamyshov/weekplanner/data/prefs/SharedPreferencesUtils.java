@@ -1,4 +1,4 @@
-package ru.sergeykamyshov.weekplanner.utils;
+package ru.sergeykamyshov.weekplanner.data.prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.sergeykamyshov.weekplanner.model.Task;
+import ru.sergeykamyshov.weekplanner.utils.Const;
 
 public class SharedPreferencesUtils {
 
+    // TODO: Переименовать prefs и не забыть про migration
     // Prefs которые периодически очищаются
     public static final String TEMP_PREFS_NAME = "ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils";
     public static final String CARD_ID_PREF = "cardId";

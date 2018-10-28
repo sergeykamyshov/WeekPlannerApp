@@ -1,4 +1,4 @@
-package ru.sergeykamyshov.weekplanner;
+package ru.sergeykamyshov.weekplanner.ui.main;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -11,11 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
+import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.fragments.AboutFragment;
 import ru.sergeykamyshov.weekplanner.fragments.ArchiveWeekFragment;
 import ru.sergeykamyshov.weekplanner.fragments.CurrentWeekFragment;
 import ru.sergeykamyshov.weekplanner.fragments.NextWeekFragment;
-import ru.sergeykamyshov.weekplanner.utils.MainActivitySharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.data.prefs.MainActivitySharedPreferencesUtils;
 
 public class MainActivity extends AppCompatActivity {
 

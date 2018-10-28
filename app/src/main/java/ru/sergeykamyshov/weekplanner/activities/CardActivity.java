@@ -20,9 +20,9 @@ import ru.sergeykamyshov.weekplanner.dialogs.DialogFactory;
 import ru.sergeykamyshov.weekplanner.dialogs.WeekPicker;
 import ru.sergeykamyshov.weekplanner.model.Task;
 import ru.sergeykamyshov.weekplanner.presenters.CardPresenter;
-import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.utils.TaskItemTouchHelper;
-import ru.sergeykamyshov.weekplanner.views.EmptyRecyclerView;
+import ru.sergeykamyshov.weekplanner.ui.custom.EmptyRecyclerView;
 
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_ID;
 import static ru.sergeykamyshov.weekplanner.activities.TaskActivity.EXTRA_TASK_POSITION;

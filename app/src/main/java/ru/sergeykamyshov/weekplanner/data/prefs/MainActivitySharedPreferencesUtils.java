@@ -1,4 +1,4 @@
-package ru.sergeykamyshov.weekplanner.utils;
+package ru.sergeykamyshov.weekplanner.data.prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,6 +7,7 @@ import ru.sergeykamyshov.weekplanner.R;
 
 public class MainActivitySharedPreferencesUtils {
 
+    // TODO: Переименовать prefs и не забыть про migration
     private static final String PREFS = "ru.sergeykamyshov.weekplanner.MainActivity";
     private static final String TITLE_KEY = "title";
     private Context mContext;

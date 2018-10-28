@@ -22,7 +22,7 @@ import ru.sergeykamyshov.weekplanner.adapters.ImportCardRecyclerAdapter;
 import ru.sergeykamyshov.weekplanner.model.Card;
 import ru.sergeykamyshov.weekplanner.model.Task;
 import ru.sergeykamyshov.weekplanner.utils.DateUtils;
-import ru.sergeykamyshov.weekplanner.utils.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 
 public class CardPicker extends DialogFragment implements OnCardClickListener {
 
