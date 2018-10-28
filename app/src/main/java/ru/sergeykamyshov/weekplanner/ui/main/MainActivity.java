@@ -12,10 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.fragments.AboutFragment;
-import ru.sergeykamyshov.weekplanner.fragments.ArchiveWeekFragment;
-import ru.sergeykamyshov.weekplanner.fragments.CurrentWeekFragment;
-import ru.sergeykamyshov.weekplanner.fragments.NextWeekFragment;
+import ru.sergeykamyshov.weekplanner.ui.about.AboutFragment;
+import ru.sergeykamyshov.weekplanner.ui.cardslist.archive.ArchiveWeekFragment;
+import ru.sergeykamyshov.weekplanner.ui.cardslist.current.CurrentWeekFragment;
+import ru.sergeykamyshov.weekplanner.ui.cardslist.next.NextWeekFragment;
 import ru.sergeykamyshov.weekplanner.data.prefs.MainActivitySharedPreferencesUtils;
 
 public class MainActivity extends AppCompatActivity {
