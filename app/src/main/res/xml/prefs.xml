@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="@string/pref_start_week_day_default"
+        android:enabled="false"
+        android:entries="@array/pref_start_week_day_entries"
+        android:entryValues="@array/pref_start_week_day_entries"
+        android:key="pref_start_week_day"
+        android:summary="@string/pref_start_week_day_desc"
+        android:title="@string/pref_start_week_day_title" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_generate_card_color"
+        android:summary="@string/pref_generate_card_color_desc"
+        android:title="@string/pref_generate_card_color_title" />
+</PreferenceScreen>

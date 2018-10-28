@@ -17,6 +17,7 @@ import ru.sergeykamyshov.weekplanner.ui.cardslist.archive.ArchiveWeekFragment;
 import ru.sergeykamyshov.weekplanner.ui.cardslist.current.CurrentWeekFragment;
 import ru.sergeykamyshov.weekplanner.ui.cardslist.next.NextWeekFragment;
 import ru.sergeykamyshov.weekplanner.data.prefs.MainActivitySharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.ui.settings.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -116,6 +117,13 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.frame_content, ArchiveWeekFragment.newInstance())
+                            .commit();
+                    break;
+                case R.id.nav_item_settings:
+                    setAndSaveTitle(getString(R.string.title_settings));
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.frame_content, SettingsFragment.newInstance())
                             .commit();
                     break;
                 case R.id.nav_item_about:

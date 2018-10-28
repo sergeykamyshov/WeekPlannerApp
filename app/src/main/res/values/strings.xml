@@ -4,6 +4,7 @@
     <!--Заголовки-->
     <string name="title_next_week">Next week</string>
     <string name="title_archive">Archive</string>
+    <string name="title_settings">Settings</string>
     <string name="title_about">About app</string>
     <string name="title_task">Task</string>
     <string name="title_card">Card</string>
@@ -12,6 +13,7 @@
     <string name="nav_item_current_week">Current week</string>
     <string name="nav_item_next_week">Next week</string>
     <string name="nav_item_archive">Archive</string>
+    <string name="nav_item_settings">Settings</string>
     <string name="nav_item_about">About app</string>
     <string name="open_drawer">Open drawer</string>
     <string name="close_drawer">Close drawer</string>
@@ -65,4 +67,20 @@
     <string name="dialog_title_import_from">Import from</string>
     <string name="dialog_title_cards">Cards</string>
     <string name="dialog_title_tasks">Tasks</string>
+
+    <!--Настройки-->
+    <string name="pref_start_week_day_title">Start date of week</string>
+    <string name="pref_start_week_day_desc">Date when new week starts</string>
+    <string name="pref_start_week_day_default">Monday</string>
+    <string-array name="pref_start_week_day_entries">
+        <item>@string/pref_start_week_day_default</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    <string name="pref_generate_card_color_title">Generate color</string>
+    <string name="pref_generate_card_color_desc">Automatically generate random color for new card</string>
 </resources>
