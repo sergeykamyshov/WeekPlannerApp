@@ -69,8 +69,8 @@
     <string name="dialog_title_tasks">Tasks</string>
 
     <!--Настройки-->
-    <string name="pref_start_week_day_title">Start date of week</string>
-    <string name="pref_start_week_day_desc">Date when new week starts</string>
+    <string name="pref_start_week_day_title">Start day of week</string>
+    <string name="pref_start_week_day_desc">Day when new week starts</string>
     <string name="pref_start_week_day_default">Monday</string>
     <string-array name="pref_start_week_day_entries">
         <item>@string/pref_start_week_day_default</item>

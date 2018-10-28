@@ -9,4 +9,10 @@
 
     <color name="card_task_text_color">#212121</color>
     <color name="card_task_swipe_background">#ECEFF1</color>
+
+    <!--TODO: delete after-->
+    <color name="card_title_1">#FFFFFF</color>
+    <color name="card_title_2">#BCE1FC</color>
+    <color name="card_title_3">#FCEABC</color>
+    <color name="card_title_4">#D0FCBC</color>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="week_card_title_text_size">22sp</dimen>
-    <dimen name="week_card_task_text_size">14sp</dimen>
+    <dimen name="week_card_task_text_size">16sp</dimen>
 
     <dimen name="card_task_text_size">16sp</dimen>
 </resources>

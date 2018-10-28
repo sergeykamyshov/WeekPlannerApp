@@ -16,9 +16,9 @@ import java.util.List;
 
 import io.realm.Realm;
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
 import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
+import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
 
 import static ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity.EXTRA_CARD_ID;
 
@@ -55,10 +55,24 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
             holder.mCardTitle.setVisibility(View.VISIBLE);
         }
 
+        // TODO: delete after
+        if (position % 4 == 0) {
+            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_4));
+        } else if (position % 3 == 0 || position == 1) {
+            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_3));
+        } else if (position % 2 == 0) {
+            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_2));
+        } else {
+            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_1));
+        }
+
         // Очищаем список задач для карточки перед заполнением
         holder.mRecyclerItemLayout.removeAllViews();
-        LinearLayout linearLayout = createTasksLayout(card);
-        holder.mRecyclerItemLayout.addView(linearLayout);
+        if (card.getTasks() != null && !card.getTasks().isEmpty()) {
+            LinearLayout linearLayout = createTasksLayout(card);
+            holder.mRecyclerItemLayout.addView(linearLayout);
+            holder.mRecyclerItemLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -112,15 +126,17 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public CardView mCardView;
-        public TextView mCardTitle;
-        public LinearLayout mRecyclerItemLayout;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        CardView mCardView;
+        TextView mCardTitle;
+        View mCardTitleColor;
+        LinearLayout mRecyclerItemLayout;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mCardView = view.findViewById(R.id.recycler_card_view);
             mCardTitle = view.findViewById(R.id.txt_card_title);
+            mCardTitleColor = view.findViewById(R.id.v_card_title_color);
             mRecyclerItemLayout = view.findViewById(R.id.list_tasks);
 
             mCardView.setOnClickListener(new View.OnClickListener() {
