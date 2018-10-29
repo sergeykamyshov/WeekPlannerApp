@@ -55,7 +55,7 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
             holder.mCardTitle.setVisibility(View.VISIBLE);
         }
 
-        // TODO: delete after
+        // TODO: delete after implement colors for card
         if (position % 4 == 0) {
             holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_4));
         } else if (position % 3 == 0 || position == 1) {

@@ -5,13 +5,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import ru.sergeykamyshov.weekplanner.R;
+import ru.sergeykamyshov.weekplanner.ui.custom.CircleColorView;
 import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
 
 import static ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity.EXTRA_ARCHIVE_FLAG;
@@ -37,6 +42,7 @@ public class CardTitleActivity extends AppCompatActivity {
     private Date mWeekEndDate;
     private boolean mIsNextWeek;
     private Date mWeekStartDate;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +51,18 @@ public class CardTitleActivity extends AppCompatActivity {
 
         setActionBar();
         init();
+
+        mRecyclerView = findViewById(R.id.recycler_colors);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        List<String> colors = Arrays.asList(getResources().getStringArray(R.array.card_color_entries));
+        ColorRecyclerAdapter adapter = new ColorRecyclerAdapter(this, colors, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View colorLine = findViewById(R.id.v_color_line);
+                colorLine.setBackgroundColor(((CircleColorView) v).getCircleColor());
+            }
+        });
+        mRecyclerView.setAdapter(adapter);
     }
 
     private void setActionBar() {

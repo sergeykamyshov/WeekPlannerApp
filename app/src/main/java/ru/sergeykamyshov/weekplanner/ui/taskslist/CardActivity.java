@@ -14,13 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.ui.dialogs.DialogFactory;
-import ru.sergeykamyshov.weekplanner.ui.dialogs.imports.weeks.WeekPicker;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.ui.card.CardTitleActivity;
-import ru.sergeykamyshov.weekplanner.ui.task.TaskActivity;
 import ru.sergeykamyshov.weekplanner.ui.custom.EmptyRecyclerView;
+import ru.sergeykamyshov.weekplanner.ui.dialogs.DialogFactory;
+import ru.sergeykamyshov.weekplanner.ui.dialogs.imports.weeks.WeekPicker;
+import ru.sergeykamyshov.weekplanner.ui.task.TaskActivity;
 
 import static ru.sergeykamyshov.weekplanner.ui.task.TaskActivity.EXTRA_TASK_ID;
 import static ru.sergeykamyshov.weekplanner.ui.task.TaskActivity.EXTRA_TASK_POSITION;

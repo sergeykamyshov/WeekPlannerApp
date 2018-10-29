@@ -27,7 +27,7 @@
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/gradient_card_title"
+            android:background="@drawable/gradient_card_color"
             app:layout_constraintBottom_toTopOf="@id/list_tasks"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

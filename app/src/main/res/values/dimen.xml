@@ -4,4 +4,6 @@
     <dimen name="week_card_task_text_size">16sp</dimen>
 
     <dimen name="card_task_text_size">16sp</dimen>
+
+    <dimen name="color_line_height">20dp</dimen>
 </resources>

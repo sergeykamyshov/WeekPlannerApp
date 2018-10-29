@@ -5,13 +5,14 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
     <style name="WeekCardTitle">
         <item name="android:textColor">@color/week_card_title_text_color</item>
         <item name="android:textSize">@dimen/week_card_title_text_size</item>
     </style>
+
     <style name="WeekCardTask">
         <item name="android:textColor">@color/week_card_task_text_color</item>
         <item name="android:textSize">@dimen/week_card_task_text_size</item>
