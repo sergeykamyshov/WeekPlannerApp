@@ -5,9 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.UUID;
 
 import io.realm.Realm;
-import ru.sergeykamyshov.weekplanner.ui.card.CardTitleActivity;
 import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.ui.base.Presenter;
+import ru.sergeykamyshov.weekplanner.utils.CardUtils;
 
 public class CardTitlePresenter implements Presenter {
 
@@ -60,5 +60,23 @@ public class CardTitlePresenter implements Presenter {
                 }
             });
         }
+    }
+
+    public void saveCardColor(final String color) {
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Card card = realm.where(Card.class).equalTo("id", mView.getCardId()).findFirst();
+                if (card != null) {
+                    card.setColor(color);
+                    realm.insertOrUpdate(card);
+                }
+            }
+        });
+    }
+
+    public void fillColorLine() {
+        String color = CardUtils.getCardColor(mView, mView.getCardId(), mView.isNewCardFlag());
+        mView.setLineColor(color);
     }
 }

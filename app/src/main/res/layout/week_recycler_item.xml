@@ -18,7 +18,6 @@
             android:id="@+id/v_card_title_color"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/card_title_1"
             app:layout_constraintBottom_toTopOf="@id/list_tasks"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

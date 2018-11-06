@@ -1,6 +1,7 @@
 package ru.sergeykamyshov.weekplanner.ui.card;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -16,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.ui.custom.CircleColorView;
 import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
 
 import static ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity.EXTRA_ARCHIVE_FLAG;
@@ -32,6 +32,7 @@ public class CardTitleActivity extends AppCompatActivity {
 
     private CardTitlePresenter mPresenter;
     private EditText mTitle;
+    private View mColorLine;
 
     // Intent Extras
     private boolean mNewCardFlag;
@@ -44,22 +45,25 @@ public class CardTitleActivity extends AppCompatActivity {
     private Date mWeekStartDate;
     private RecyclerView mRecyclerView;
 
+    private String mChosenColor;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_title);
 
-        setActionBar();
         init();
+        setActionBar();
+        mPresenter.fillColorLine();
 
         mRecyclerView = findViewById(R.id.recycler_colors);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         List<String> colors = Arrays.asList(getResources().getStringArray(R.array.card_color_entries));
-        ColorRecyclerAdapter adapter = new ColorRecyclerAdapter(this, colors, new View.OnClickListener() {
+        ColorRecyclerAdapter adapter = new ColorRecyclerAdapter(this, colors, new OnColorClickListener() {
             @Override
-            public void onClick(View v) {
-                View colorLine = findViewById(R.id.v_color_line);
-                colorLine.setBackgroundColor(((CircleColorView) v).getCircleColor());
+            public void onClick(String color) {
+                mColorLine.setBackgroundColor(Color.parseColor(color));
+                mChosenColor = color;
             }
         });
         mRecyclerView.setAdapter(adapter);
@@ -75,6 +79,8 @@ public class CardTitleActivity extends AppCompatActivity {
 
     private void init() {
         mTitle = findViewById(R.id.txt_card_title);
+        mColorLine = findViewById(R.id.v_color_line);
+
         getIntentExtras();
 
         mPresenter = new CardTitlePresenter();
@@ -121,6 +127,7 @@ public class CardTitleActivity extends AppCompatActivity {
 
     public void saveCardTitleAction(View view) {
         mPresenter.saveCardTitle();
+        mPresenter.saveCardColor(mChosenColor);
 
         Intent intent = new Intent(this, CardActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -130,6 +137,11 @@ public class CardTitleActivity extends AppCompatActivity {
 
     public boolean isNewCardFlag() {
         return mNewCardFlag;
+    }
+
+    public void setLineColor(String color) {
+        mChosenColor = color;
+        mColorLine.setBackgroundColor(Color.parseColor(color));
     }
 
     public String getCardTitle() {

@@ -2,13 +2,15 @@ package ru.sergeykamyshov.weekplanner.ui.cardslist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
+import ru.sergeykamyshov.weekplanner.utils.CardUtils;
 
 import static ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity.EXTRA_CARD_ID;
 
@@ -45,26 +48,22 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Card card = mCards.get(position);
-        String cardTitle = card != null ? card.getTitle() : "";
-        if (TextUtils.isEmpty(cardTitle)) {
+        if (card == null) {
+            return;
+        }
+
+        String title = card.getTitle();
+        if (TextUtils.isEmpty(title)) {
             holder.mCardTitle.setVisibility(View.GONE);
         } else {
-            holder.mCardTitle.setText(cardTitle);
+            holder.mCardTitle.setText(title);
             holder.mCardTitle.setVisibility(View.VISIBLE);
         }
 
-        // TODO: delete after implement colors for card
-        if (position % 4 == 0) {
-            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_4));
-        } else if (position % 3 == 0 || position == 1) {
-            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_3));
-        } else if (position % 2 == 0) {
-            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_2));
-        } else {
-            holder.mCardTitleColor.setBackgroundColor(mContext.getResources().getColor(R.color.card_title_1));
-        }
+        String color = CardUtils.getCardColor(mContext, card.getId());
+        holder.mCardColor.setBackgroundColor(Color.parseColor(color));
 
         // Очищаем список задач для карточки перед заполнением
         holder.mRecyclerItemLayout.removeAllViews();
@@ -94,10 +93,15 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
 
     private void createTaskItemLayout(LinearLayout linearLayout, Task task) {
         View view = LayoutInflater.from(linearLayout.getContext()).inflate(R.layout.week_card_task_item, linearLayout, false);
-        CheckBox taskDone = view.findViewById(R.id.cb_task_done);
-        taskDone.setChecked(task.isDone());
-        TextView taskTitle = view.findViewById(R.id.txt_task_title);
-        taskTitle.setText(task.getTitle());
+
+        TextView title = view.findViewById(R.id.txt_task_title);
+        title.setText(task.getTitle());
+
+        if (task.isDone()) {
+            title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            title.setTextColor(mContext.getResources().getColor(R.color.card_task_done_text_strike));
+        }
+
         linearLayout.addView(view);
     }
 
@@ -129,14 +133,14 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView mCardView;
         TextView mCardTitle;
-        View mCardTitleColor;
+        View mCardColor;
         LinearLayout mRecyclerItemLayout;
 
         ViewHolder(View view) {
             super(view);
             mCardView = view.findViewById(R.id.recycler_card_view);
             mCardTitle = view.findViewById(R.id.txt_card_title);
-            mCardTitleColor = view.findViewById(R.id.v_card_title_color);
+            mCardColor = view.findViewById(R.id.v_card_title_color);
             mRecyclerItemLayout = view.findViewById(R.id.list_tasks);
 
             mCardView.setOnClickListener(new View.OnClickListener() {

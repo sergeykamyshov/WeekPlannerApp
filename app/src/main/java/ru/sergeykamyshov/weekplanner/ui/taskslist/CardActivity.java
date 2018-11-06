@@ -1,6 +1,7 @@
 package ru.sergeykamyshov.weekplanner.ui.taskslist;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -40,6 +41,7 @@ public class CardActivity extends AppCompatActivity {
     private DataView mAdapter;
     private String mCardId;
     private EmptyRecyclerView mRecyclerView;
+    private View mColorLine;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +51,8 @@ public class CardActivity extends AppCompatActivity {
         mCardId = getIntent().getStringExtra(EXTRA_CARD_ID);
         mPresenter = new CardPresenter(mCardId);
         mPresenter.attachView(this);
+
+        mColorLine = findViewById(R.id.v_color_line);
 
         // Создаем и настраиваем RecyclerView
         mRecyclerView = findViewById(R.id.recycler_tasks);
@@ -84,6 +88,12 @@ public class CardActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(mPresenter.getCard().getTitle());
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.fillColorLine();
     }
 
     @Override
@@ -170,6 +180,10 @@ public class CardActivity extends AppCompatActivity {
 
     public void updateList() {
         mAdapter.refresh();
+    }
+
+    public void setLineColor(String color) {
+        mColorLine.setBackgroundColor(Color.parseColor(color));
     }
 
 }

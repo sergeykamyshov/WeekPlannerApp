@@ -11,6 +11,7 @@ import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.ui.base.Presenter;
+import ru.sergeykamyshov.weekplanner.utils.CardUtils;
 
 public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
 
@@ -112,6 +113,11 @@ public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
     @Override
     public void onItemChecked(int position) {
         mAdapter.onItemChecked(position);
+    }
+
+    public void fillColorLine() {
+        String color = CardUtils.getCardColor(mView, mCardId);
+        mView.setLineColor(color);
     }
 
 }

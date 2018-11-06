@@ -14,7 +14,7 @@ public class App extends Application {
 
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .migration(new RealmMigrationImpl())
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);

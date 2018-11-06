@@ -14,6 +14,10 @@ public class RealmMigrationImpl implements RealmMigration {
             schema.get("Card")
                     .addField("position", int.class);
             oldVersion++;
+        } else if (oldVersion == 1) {
+            schema.get("Card")
+                    .addField("color", String.class);
+            oldVersion++;
         }
     }
 }

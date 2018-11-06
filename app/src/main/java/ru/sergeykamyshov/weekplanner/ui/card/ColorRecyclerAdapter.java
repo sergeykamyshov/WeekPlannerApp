@@ -17,12 +17,12 @@ public class ColorRecyclerAdapter extends RecyclerView.Adapter<ColorRecyclerAdap
 
     private Context mContext;
     private List<String> mColors;
-    private View.OnClickListener mOnClickListener;
+    private OnColorClickListener mOnClickListener;
 
-    public ColorRecyclerAdapter(Context context, List<String> colors, View.OnClickListener onClickListener) {
+    public ColorRecyclerAdapter(Context context, List<String> colors, OnColorClickListener listener) {
         mContext = context;
         mColors = colors;
-        mOnClickListener = onClickListener;
+        mOnClickListener = listener;
     }
 
     @NonNull
@@ -51,12 +51,12 @@ public class ColorRecyclerAdapter extends RecyclerView.Adapter<ColorRecyclerAdap
             mCircleView = itemView.findViewById(R.id.v_circle);
         }
 
-        void bind(String color, final View.OnClickListener onClickListener) {
+        void bind(final String color, final OnColorClickListener onClickListener) {
             mCircleView.setCircleColor(Color.parseColor(color));
             mCircleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onClickListener.onClick(v);
+                    onClickListener.onClick(color);
                 }
             });
         }

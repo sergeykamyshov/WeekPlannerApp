@@ -12,6 +12,7 @@ public class Card extends RealmObject {
     @PrimaryKey
     private String id = UUID.randomUUID().toString();
     private String title;
+    private String color;
     private Date creationDate = new Date();
     private int position;
     private RealmList<Task> tasks = new RealmList<>();
@@ -30,6 +31,14 @@ public class Card extends RealmObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public Date getCreationDate() {
