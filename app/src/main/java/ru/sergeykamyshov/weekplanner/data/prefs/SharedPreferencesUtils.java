@@ -24,6 +24,7 @@ public class SharedPreferencesUtils {
     public static final String KEEP_PREFS_NAME = "ru.sergeykamyshov.weekplanner.utils.KeepSharedPreferencesUtils";
     public static final String IMPORT_CARD_WEEK_END_DATE_PREF = "importEndWeekDate";
     public static final String IMPORT_CARD_ID_PREF = "importCardId";
+    public static final String CARDS_VIEW_TYPE = "cardsViewType";
 
     public static void saveTaskData(Context context, String cardId, Task task, int position) {
         SharedPreferences prefs = context.getSharedPreferences(TEMP_PREFS_NAME, Context.MODE_PRIVATE);
@@ -81,5 +82,17 @@ public class SharedPreferencesUtils {
     public static String getCardIdForImportTask(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(KEEP_PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getString(IMPORT_CARD_ID_PREF, Const.EMPTY);
+    }
+
+    public static void saveCardsViewType(Context context, int viewType) {
+        SharedPreferences prefs = context.getSharedPreferences(KEEP_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(CARDS_VIEW_TYPE, viewType);
+        editor.apply();
+    }
+
+    public static int getCardsViewType(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(KEEP_PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getInt(CARDS_VIEW_TYPE, Const.VIEW_CARDS);
     }
 }

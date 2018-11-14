@@ -15,17 +15,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.ui.dialogs.DialogFactory;
 import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.ui.custom.EmptyRecyclerView;
+import ru.sergeykamyshov.weekplanner.ui.dialogs.DialogFactory;
+import ru.sergeykamyshov.weekplanner.utils.Const;
 
 public abstract class AbstractWeekFragment extends Fragment {
 
@@ -33,6 +33,7 @@ public abstract class AbstractWeekFragment extends Fragment {
     protected Realm mRealm;
     protected Date mWeekStartDate;
     protected Date mWeekEndDate;
+    protected int mViewType;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,7 +56,8 @@ public abstract class AbstractWeekFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setEmptyView(view.findViewById(R.id.layout_empty_card_list));
 
-        mWeekRecyclerAdapter = new WeekRecyclerAdapter(getContext(), Collections.<Card>emptyList());
+        mViewType = SharedPreferencesUtils.getCardsViewType(getActivity());
+        mWeekRecyclerAdapter = new WeekRecyclerAdapter(getContext(), mViewType);
         recyclerView.setAdapter(mWeekRecyclerAdapter);
 
         // Добавляем возможность перемещать карточки в списке
@@ -77,6 +79,16 @@ public abstract class AbstractWeekFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (mViewType == Const.VIEW_CARDS) {
+            menu.findItem(R.id.action_show_cards).setVisible(false);
+        } else {
+            menu.findItem(R.id.action_show_titles).setVisible(false);
+        }
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_import_card:
@@ -85,8 +97,21 @@ public abstract class AbstractWeekFragment extends Fragment {
                 SharedPreferencesUtils.saveWeekEndDate(activity, mWeekEndDate);
                 DialogFactory.getWeekPicker().show(activity.getSupportFragmentManager(), null);
                 return true;
+            case R.id.action_show_cards:
+                applyViewType(Const.VIEW_CARDS);
+                return true;
+            case R.id.action_show_titles:
+                applyViewType(Const.VIEW_TITLES);
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void applyViewType(int viewType) {
+        mViewType = viewType;
+        mWeekRecyclerAdapter.setViewType(mViewType);
+        getActivity().invalidateOptionsMenu();
+        SharedPreferencesUtils.saveCardsViewType(getActivity(), mViewType);
     }
 
     public abstract Date getWeekStartDate(Date date);

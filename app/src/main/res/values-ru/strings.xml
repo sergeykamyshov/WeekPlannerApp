@@ -21,6 +21,8 @@
 
     <!--Меню-->
     <string name="menu_import_card">Импортировать карточку</string>
+    <string name="menu_show_titles">Показать заголовки</string>
+    <string name="menu_show_cards">Показать карточки</string>
     <string name="menu_delete_card">Удалить карточку</string>
     <string name="menu_import_task">Импортировать задачу</string>
     <string name="menu_delete_task">Удалить задачу</string>

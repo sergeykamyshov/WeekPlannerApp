@@ -20,6 +20,8 @@
 
     <!--Меню-->
     <string name="menu_import_card">Import card</string>
+    <string name="menu_show_titles">Show titles</string>
+    <string name="menu_show_cards">Show cards</string>
     <string name="menu_delete_card">Delete card</string>
     <string name="menu_import_task">Import task</string>
     <string name="menu_delete_task">Delete task</string>

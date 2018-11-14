@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -22,6 +23,7 @@ import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
 import ru.sergeykamyshov.weekplanner.utils.CardUtils;
+import ru.sergeykamyshov.weekplanner.utils.Const;
 
 import static ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity.EXTRA_CARD_ID;
 
@@ -29,15 +31,21 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
         implements CardItemTouchHelperAdapter {
 
     private Context mContext;
-    private List<Card> mCards;
+    private List<Card> mCards = new ArrayList<>();
+    private int mViewType;
 
-    public WeekRecyclerAdapter(Context context, List<Card> cards) {
+    public WeekRecyclerAdapter(Context context, int viewType) {
         mContext = context;
-        mCards = cards;
+        mViewType = viewType;
     }
 
     public void setCards(List<Card> cards) {
         mCards = cards;
+        notifyDataSetChanged();
+    }
+
+    public void setViewType(int viewType) {
+        mViewType = viewType;
         notifyDataSetChanged();
     }
 
@@ -67,10 +75,12 @@ public class WeekRecyclerAdapter extends RecyclerView.Adapter<WeekRecyclerAdapte
 
         // Очищаем список задач для карточки перед заполнением
         holder.mRecyclerItemLayout.removeAllViews();
-        if (card.getTasks() != null && !card.getTasks().isEmpty()) {
-            LinearLayout linearLayout = createTasksLayout(card);
-            holder.mRecyclerItemLayout.addView(linearLayout);
-            holder.mRecyclerItemLayout.setVisibility(View.VISIBLE);
+        if (mViewType == Const.VIEW_CARDS) {
+            if (card.getTasks() != null && !card.getTasks().isEmpty()) {
+                LinearLayout linearLayout = createTasksLayout(card);
+                holder.mRecyclerItemLayout.addView(linearLayout);
+                holder.mRecyclerItemLayout.setVisibility(View.VISIBLE);
+            }
         }
     }
 
