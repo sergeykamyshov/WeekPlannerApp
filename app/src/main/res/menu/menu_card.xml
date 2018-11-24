@@ -10,7 +10,7 @@
     <item
         android:id="@+id/action_set_card_title"
         android:icon="@drawable/ic_action_change_title_24dp"
-        android:title="@string/menu_change_cart_title"
+        android:title="@string/menu_change_cart"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_import_task"
