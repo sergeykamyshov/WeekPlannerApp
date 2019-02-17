@@ -9,11 +9,22 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import io.realm.Realm;
+import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
@@ -38,15 +49,29 @@ public class CardActivity extends AppCompatActivity {
     public static final String EXTRA_NEXT_WEEK_FLAG = "nextWeekFlag";
 
     private CardPresenter mPresenter;
-    private DataView mAdapter;
+    private CardRecyclerAdapter mAdapter;
     private String mCardId;
     private EmptyRecyclerView mRecyclerView;
     private View mColorLine;
+    private FrameLayout mDefaultToolbarLayout;
+    private FrameLayout mEditToolbarLayout;
+
+    private Toolbar mDefaultToolbar;
+    private Toolbar mEditToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card);
+
+        mDefaultToolbarLayout = findViewById(R.id.toolbar_default);
+        mEditToolbarLayout = findViewById(R.id.toolbar_edit);
+        mEditToolbarLayout.setVisibility(View.GONE);
+
+        mDefaultToolbar = findViewById(R.id.toolbar_tasks_list);
+        mEditToolbar = findViewById(R.id.toolbar_tasks_list_edit);
+
+        setSupportActionBar(mDefaultToolbar);
 
         mCardId = getIntent().getStringExtra(EXTRA_CARD_ID);
         mPresenter = new CardPresenter(mCardId);
@@ -57,28 +82,76 @@ public class CardActivity extends AppCompatActivity {
         // Создаем и настраиваем RecyclerView
         mRecyclerView = findViewById(R.id.recycler_tasks);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setEmptyView(findViewById(R.id.layout_empty_task_list));
+        mRecyclerView.setEmptyView(findViewById(R.id.v_empty_task_list));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         // Создаем и настраиваем адаптер
-        CardRecyclerAdapter adapter = new CardRecyclerAdapter(this, mPresenter.getCard().getTasks(), new OnTaskItemClickListener() {
-            // Реализация обработчика нажатия задачи в списке
-            @Override
-            public void onClick(Task task, int position) {
-                Intent intent = new Intent(CardActivity.this, TaskActivity.class);
-                intent.putExtra(EXTRA_CARD_ID, mCardId);
-                intent.putExtra(EXTRA_TASK_ID, task.getId());
-                intent.putExtra(EXTRA_TASK_POSITION, position);
-                startActivity(intent);
-            }
-        });
+        List<Task> tasks = Realm.getDefaultInstance().copyFromRealm(mPresenter.getCard().getTasks());
+        CardRecyclerAdapter adapter = new CardRecyclerAdapter(
+                this,
+                mCardId,
+                tasks,
+                new CardRecyclerAdapter.Callback() {
+                    @Override
+                    public void onClick(Task task, int position) {
+                        Intent intent = new Intent(CardActivity.this, TaskActivity.class);
+                        intent.putExtra(EXTRA_CARD_ID, mCardId);
+                        intent.putExtra(EXTRA_TASK_ID, task.getId());
+                        intent.putExtra(EXTRA_TASK_POSITION, position);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onSelect() {
+                        mEditToolbarLayout.setVisibility(View.VISIBLE);
+                        mDefaultToolbarLayout.setVisibility(View.GONE);
+                        setSupportActionBar(mEditToolbar);
+                        if (getSupportActionBar() != null) {
+                            getSupportActionBar().setTitle("");
+                        }
+                    }
+
+                    @Override
+                    public void onResetSelect() {
+                        mDefaultToolbarLayout.setVisibility(View.VISIBLE);
+                        mEditToolbarLayout.setVisibility(View.GONE);
+                        setSupportActionBar(mDefaultToolbar);
+                    }
+
+                    @Override
+                    public void taskChanged(Task task) {
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        realm.insertOrUpdate(task);
+                        realm.commitTransaction();
+                    }
+
+                    @Override
+                    public void onTaskDismiss(Task task, int position) {
+                        // Сохраняем данные перед обновлением
+                        saveUndoData(task, position);
+
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        RealmList<Task> realmList = mPresenter.getCard().getTasks();
+                        // Удаляем из задачу из списка
+                        Task removedTaskFromList = realmList.remove(position);
+                        // Удаляем из задачу realm
+                        if (removedTaskFromList.isValid()) {
+                            removedTaskFromList.deleteFromRealm();
+                        }
+                        realm.commitTransaction();
+
+                        showUndoSnackbar();
+                    }
+                }
+        );
         mRecyclerView.setAdapter(adapter);
         mPresenter.setAdapter(adapter);
-        // Сохраняем ссылку на адаптер с интерфейсом DataView - для ограничения доступа
         mAdapter = adapter;
 
         // Добавляем возможность перемещать задачи в списке
-        ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(mPresenter);
+        ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
@@ -104,20 +177,24 @@ public class CardActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle(mPresenter.getCard().getTitle());
         }
-        mAdapter.refresh();
+        mAdapter.setTasks(Realm.getDefaultInstance().copyFromRealm(mPresenter.getCard().getTasks()));
         showUndoSnackbar();
     }
 
     @Override
     protected void onDestroy() {
-        mPresenter.clearPrefs();
+        clearPrefs();
         mPresenter.detachView();
         super.onDestroy();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_card, menu);
+        if (mEditToolbarLayout.getVisibility() == View.VISIBLE) {
+            getMenuInflater().inflate(R.menu.menu_tasks_list_edit, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.menu_tasks_list, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -145,6 +222,37 @@ public class CardActivity extends AppCompatActivity {
                 intent.putExtra(EXTRA_CARD_TITLE, mPresenter.getCard().getTitle());
                 startActivity(intent);
                 return true;
+            case R.id.action_check_all_tasks:
+                Toast.makeText(this, "Check all tasks", Toast.LENGTH_SHORT).show();
+                mAdapter.checkSelectedItems(true);
+                return true;
+            case R.id.action_delete_all_tasks:
+                Toast.makeText(this, "Delete all tasks", Toast.LENGTH_SHORT).show();
+
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                Set<Task> selectedItems = mAdapter.getSelectedItems();
+                RealmList<Task> realmList = mPresenter.getCard().getTasks();
+
+                // Отбираем задачи для удаления по выделенным задачам
+                List<Task> taskForRemove = new ArrayList<>();
+                for (Task selectedTask : selectedItems) {
+                    for (Task task : realmList) {
+                        if (selectedTask.getId().equals(task.getId())) {
+                            taskForRemove.add(task);
+                        }
+                    }
+                }
+                // Удаляем из списка карточки
+                realmList.removeAll(taskForRemove);
+                // Удаляем из realm
+                for (Task task : taskForRemove) {
+                    task.deleteFromRealm();
+                }
+                realm.commitTransaction();
+
+                mAdapter.deleteSelectedItems();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -156,13 +264,13 @@ public class CardActivity extends AppCompatActivity {
     }
 
     public void showUndoSnackbar() {
-        if (mPresenter.hasUndoData()) {
+        if (hasUndoData()) {
             Snackbar snackbar = Snackbar.make(mRecyclerView, getString(R.string.snackbar_task_deleted), Snackbar.LENGTH_LONG);
             // Востанавливаем задачу если пользователь нажал "Отменить"
             snackbar.setAction(getString(R.string.snackbar_task_undo), new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mPresenter.createTaskFromPrefs();
+                    createTaskFromPrefs();
                 }
             });
             // Очищаем SharedPreferences если пользователь не востановил задачу
@@ -170,7 +278,7 @@ public class CardActivity extends AppCompatActivity {
                 @Override
                 public void onDismissed(Snackbar transientBottomBar, int event) {
                     if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
-                        mPresenter.clearPrefs();
+                        clearPrefs();
                     }
                 }
             });
@@ -179,11 +287,51 @@ public class CardActivity extends AppCompatActivity {
     }
 
     public void updateList() {
-        mAdapter.refresh();
+        mAdapter.setTasks(Realm.getDefaultInstance().copyFromRealm(mPresenter.getCard().getTasks()));
     }
 
     public void setLineColor(String color) {
         mColorLine.setBackgroundColor(Color.parseColor(color));
     }
 
+    public void saveUndoData(Task task, int position) {
+        SharedPreferencesUtils.saveTaskData(this, "", task, position);
+    }
+
+    public boolean hasUndoData() {
+        return SharedPreferencesUtils.hasTaskData(this);
+    }
+
+    public void createTaskFromPrefs() {
+        Map<String, Object> data = SharedPreferencesUtils.getTaskData(this);
+
+        int position = (int) data.get(SharedPreferencesUtils.TASK_POSITION_PREF);
+
+        Realm realm = Realm.getDefaultInstance();
+        // Востанавливаем задачу по ранее сохраненым данным
+        realm.beginTransaction();
+        Task task = realm.createObject(Task.class, UUID.randomUUID().toString());
+        task.setTitle((String) data.get(SharedPreferencesUtils.TASK_TITLE_PREF));
+        task.setDone((Boolean) data.get(SharedPreferencesUtils.TASK_IS_DONE_PREF));
+        mPresenter.getCard().getTasks().add(position, task);
+        realm.commitTransaction();
+
+        mAdapter.insertItemToPosition(realm.copyFromRealm(task), position);
+        SharedPreferencesUtils.clearTaskData(this);
+    }
+
+    public void clearPrefs() {
+        if (SharedPreferencesUtils.hasTaskData(this)) {
+            SharedPreferencesUtils.clearTaskData(this);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mAdapter.isSelectable()) {
+            mAdapter.cancelSelect();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

@@ -2,18 +2,14 @@ package ru.sergeykamyshov.weekplanner.ui.taskslist;
 
 import android.support.v7.app.AppCompatActivity;
 
-import java.util.Map;
-import java.util.UUID;
-
 import io.realm.Realm;
 import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
-import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
 import ru.sergeykamyshov.weekplanner.ui.base.Presenter;
 import ru.sergeykamyshov.weekplanner.utils.CardUtils;
 
-public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
+public class CardPresenter implements Presenter {
 
     private CardActivity mView;
     private CardRecyclerAdapter mAdapter;
@@ -67,52 +63,6 @@ public class CardPresenter implements Presenter, TaskItemTouchHelperAdapter {
                 getCard().deleteFromRealm();
             }
         });
-    }
-
-    public void createTaskFromPrefs() {
-        Map<String, Object> data = SharedPreferencesUtils.getTaskData(mView);
-
-        // Создаем новую задачу с ранее сохранеными данными
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        Task task = realm.createObject(Task.class, UUID.randomUUID().toString());
-        task.setTitle((String) data.get(SharedPreferencesUtils.TASK_TITLE_PREF));
-        task.setDone((Boolean) data.get(SharedPreferencesUtils.TASK_IS_DONE_PREF));
-        realm.commitTransaction();
-
-        int position = (int) data.get(SharedPreferencesUtils.TASK_POSITION_PREF);
-        mAdapter.insertItemToPosition(task, position);
-        // Костыль. Не разобрался почему при добавлении первой задачи RecyclerView не обновляется через notifyItemInserted
-        if (getCard().getTasks().size() == 1) {
-            mAdapter.notifyDataSetChanged();
-        }
-        SharedPreferencesUtils.clearTaskData(mView);
-    }
-
-    public boolean hasUndoData() {
-        return SharedPreferencesUtils.hasTaskData(mView);
-    }
-
-    public void clearPrefs() {
-        if (mView != null && SharedPreferencesUtils.hasTaskData(mView)) {
-            SharedPreferencesUtils.clearTaskData(mView);
-        }
-    }
-
-    @Override
-    public void onItemMove(int fromPosition, int toPosition) {
-        mAdapter.onItemMove(fromPosition, toPosition);
-    }
-
-    @Override
-    public void onItemDismiss(final int position) {
-        mAdapter.onItemDismiss(position);
-        mView.showUndoSnackbar();
-    }
-
-    @Override
-    public void onItemChecked(int position) {
-        mAdapter.onItemChecked(position);
     }
 
     public void fillColorLine() {

@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <item
         android:id="@+id/action_delete_card"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/menu_delete_card"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/action_set_card_title"
         android:icon="@drawable/ic_action_change_title_24dp"
         android:title="@string/menu_change_cart"
-        app:showAsAction="never"/>
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/action_import_task"
         android:icon="@drawable/ic_arrow_import_white_24dp"
         android:title="@string/menu_import_task"
-        app:showAsAction="never"/>
+        app:showAsAction="never"
+        />
 
 </menu>

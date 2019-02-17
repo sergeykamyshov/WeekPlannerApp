@@ -15,7 +15,7 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return true;
+        return false;
     }
 
     @Override
@@ -25,7 +25,8 @@ public class TaskItemTouchHelper extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+//        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+        int dragFlags = ItemTouchHelper.ACTION_STATE_IDLE;
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         return makeMovementFlags(dragFlags, swipeFlags);
     }

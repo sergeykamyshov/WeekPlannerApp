@@ -1,6 +1,8 @@
 package ru.sergeykamyshov.weekplanner.ui.taskslist;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,33 +12,47 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import io.realm.Realm;
-import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
-import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.utils.CardUtils;
 
-public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder> implements DataView {
+public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapter.ViewHolder>
+        implements TaskItemTouchHelperAdapter {
 
     private Context mContext;
-    private RealmList<Task> mTasks;
-    private OnTaskItemClickListener mOnTaskItemClickListener;
+    private String mCardId;
+    private List<Task> mTasks;
+    private Callback mCallback;
+    private LayoutInflater mLayoutInflater;
+    private Realm mRealm = Realm.getDefaultInstance();
 
-    public CardRecyclerAdapter(Context context, RealmList<Task> tasks, OnTaskItemClickListener onTaskItemClickListener) {
+    private boolean mSelectable = false;
+    private Set<Task> mSelectedItems = new HashSet<>();
+
+    CardRecyclerAdapter(Context context, String cardId, List<Task> tasks, Callback callback) {
         mContext = context;
+        mCardId = cardId;
         mTasks = tasks;
-        mOnTaskItemClickListener = onTaskItemClickListener;
+        mCallback = callback;
+
+        mLayoutInflater = LayoutInflater.from(context);
     }
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_recycler_item, parent, false);
-        return new CardRecyclerAdapter.ViewHolder(view);
-    }
+    interface Callback {
+        void onClick(Task task, int position);
 
-    @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.bind(mTasks.get(position), mOnTaskItemClickListener);
+        void onSelect();
+
+        void onResetSelect();
+
+        void taskChanged(Task task);
+
+        void onTaskDismiss(Task task, int position);
     }
 
     @Override
@@ -44,67 +60,165 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         return mTasks.size();
     }
 
+    @NonNull
     @Override
-    public void refresh() {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = mLayoutInflater.inflate(R.layout.card_recycler_item, parent, false);
+        final ViewHolder holder = new ViewHolder(view);
+
+        holder.mIsDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Task task = mTasks.get(holder.getAdapterPosition());
+                task.setDone(isChecked);
+
+                mCallback.taskChanged(task);
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = holder.getAdapterPosition();
+                Task task = mTasks.get(adapterPosition);
+                // Если уже есть выделенные элементы, то можно выделять простым кликом
+                if (mSelectable) {
+                    // Отменяем выделение если кликнули на уже выделенный
+                    if (mSelectedItems.contains(task)) {
+                        mSelectedItems.remove(task);
+                        notifyItemChanged(adapterPosition);
+                    } else {
+                        mSelectedItems.add(task);
+                        notifyItemChanged(adapterPosition);
+                    }
+                    // Сбрасываем признак выбора элементов если больше нет элементов
+                    if (mSelectedItems.isEmpty()) {
+                        cancelSelect();
+                    }
+                } else {
+                    mCallback.onClick(task, adapterPosition);
+                }
+            }
+        });
+
+        holder.itemView.setLongClickable(true);
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (!mSelectable) {
+                    mSelectable = true;
+
+                    int adapterPosition = holder.getAdapterPosition();
+                    Task task = mTasks.get(adapterPosition);
+
+                    mSelectedItems.add(task);
+                    notifyItemChanged(adapterPosition);
+
+                    mCallback.onSelect();
+                }
+                return true;
+            }
+        });
+
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        final Task task = mTasks.get(position);
+        if (task == null) {
+            return;
+        }
+
+        holder.mIsDone.setChecked(task.isDone());
+
+        holder.mTaskTitle.setText(task.getTitle());
+
+        holder.mViewForeground.setBackgroundColor(
+                mSelectedItems.contains(task)
+                        ? Color.parseColor(CardUtils.getCardColor(mContext, mCardId))
+                        : Color.WHITE
+        );
+    }
+
+    void checkSelectedItems(boolean checked) {
+        // После изменения checkbox, сработает listener и вызовет сохранение в базу (в методе onCreateViewHolder())
+        for (Task task : mSelectedItems) {
+            task.setDone(checked);
+        }
+        cancelSelect();
+    }
+
+    void deleteSelectedItems() {
+        mTasks.removeAll(mSelectedItems);
+        cancelSelect();
+    }
+
+    void cancelSelect() {
+        mSelectable = false;
+        mSelectedItems.clear();
+        notifyDataSetChanged();
+        mCallback.onResetSelect();
+    }
+
+    boolean isSelectable() {
+        return mSelectable;
+    }
+
+    void setTasks(List<Task> tasks) {
+        mTasks = tasks;
         notifyDataSetChanged();
     }
 
-    public void onItemMove(int fromPosition, int toPosition) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        Task movedTask = mTasks.remove(fromPosition);
-        mTasks.add(toPosition, movedTask);
-        realm.commitTransaction();
-
-        notifyItemMoved(fromPosition, toPosition);
+    void refresh() {
+        notifyDataSetChanged();
     }
 
-    public void onItemDismiss(int position) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        Task removedTask = mTasks.remove(position);
-        SharedPreferencesUtils.saveTaskData(mContext, "", removedTask, position);
-        if (removedTask.isValid()) {
-            removedTask.deleteFromRealm();
-        }
-        realm.commitTransaction();
-
-        notifyItemRemoved(position);
-    }
-
-    public void onItemChecked(int position) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        Task task = mTasks.get(position);
-        if (task != null) {
-            boolean checked = task.isDone();
-            task.setDone(!checked);
-        }
-        realm.commitTransaction();
-
-        notifyItemChanged(position);
-    }
-
-    public void insertItemToPosition(Task task, int position) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
+    void insertItemToPosition(Task task, int position) {
         mTasks.add(position, task);
-        realm.commitTransaction();
-
         notifyItemInserted(position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    Set<Task> getSelectedItems() {
+        return mSelectedItems;
+    }
 
-        public CheckBox mIsDone;
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+//        mRealm.beginTransaction();
+//        Task movedTask = mTasks.remove(fromPosition);
+//        mTasks.add(toPosition, movedTask);
+//        mRealm.commitTransaction();
+//
+//        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        Task task = mTasks.remove(position);
+        mCallback.onTaskDismiss(task, position);
+        notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemChecked(int position) {
+        Task task = mTasks.get(position);
+        task.setDone(!task.isDone());
+        mCallback.taskChanged(task);
+        notifyItemChanged(position);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        CheckBox mIsDone;
         TextView mTaskTitle;
         ImageView mMoreImg;
-        public View mViewForeground;
-        public View mViewBackgroundDone;
-        public View mViewBackgroundUndone;
-        public View mViewBackgroundRemove;
+        View mViewForeground;
+        View mViewBackgroundDone;
+        View mViewBackgroundUndone;
+        View mViewBackgroundRemove;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             mIsDone = itemView.findViewById(R.id.cb_is_done);
             mTaskTitle = itemView.findViewById(R.id.txt_task_title);
@@ -114,30 +228,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             mViewBackgroundUndone = itemView.findViewById(R.id.layout_task_undone_background);
             mViewBackgroundRemove = itemView.findViewById(R.id.layout_task_remove_background);
         }
-
-        public void bind(final Task task, OnTaskItemClickListener onTaskItemClickListener) {
-            mIsDone.setChecked(task.isDone());
-            mIsDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
-                    Realm realm = Realm.getDefaultInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            mTasks.get(getAdapterPosition()).setDone(isChecked);
-                        }
-                    });
-                }
-            });
-
-            mTaskTitle.setText(task.getTitle());
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnTaskItemClickListener.onClick(task, getAdapterPosition());
-                }
-            });
-        }
     }
+
 }
