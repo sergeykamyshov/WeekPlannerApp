@@ -29,6 +29,8 @@
     <string name="menu_change_cart">Change card</string>
     <string name="menu_save_cart_title">Save</string>
     <string name="menu_save_task_title">Save</string>
+    <string name="menu_check_selected">Check selected</string>
+    <string name="menu_delete_selected">Delete selected</string>
 
     <!--Actions-->
     <string name="task_action_cancel">Cancel</string>

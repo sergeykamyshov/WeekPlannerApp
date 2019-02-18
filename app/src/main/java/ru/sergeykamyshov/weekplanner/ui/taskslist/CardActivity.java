@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -58,11 +59,14 @@ public class CardActivity extends AppCompatActivity {
 
     private Toolbar mDefaultToolbar;
     private Toolbar mEditToolbar;
+    private FloatingActionButton mFab;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card);
+
+        mFab = findViewById(R.id.fab_add_task);
 
         mDefaultToolbarLayout = findViewById(R.id.toolbar_default);
         mEditToolbarLayout = findViewById(R.id.toolbar_edit);
@@ -109,6 +113,8 @@ public class CardActivity extends AppCompatActivity {
                         if (getSupportActionBar() != null) {
                             getSupportActionBar().setTitle("");
                         }
+
+                        mFab.hide();
                     }
 
                     @Override
@@ -116,6 +122,8 @@ public class CardActivity extends AppCompatActivity {
                         mDefaultToolbarLayout.setVisibility(View.VISIBLE);
                         mEditToolbarLayout.setVisibility(View.GONE);
                         setSupportActionBar(mDefaultToolbar);
+
+                        mFab.show();
                     }
 
                     @Override

@@ -30,6 +30,8 @@
     <string name="menu_change_cart">Изменить карточку</string>
     <string name="menu_save_cart_title">Сохранить</string>
     <string name="menu_save_task_title">Сохранить</string>
+    <string name="menu_check_selected">Выполнить выбранные</string>
+    <string name="menu_delete_selected">Удалить выбранные</string>
 
     <!--Actions-->
     <string name="task_action_cancel">Отмена</string>
