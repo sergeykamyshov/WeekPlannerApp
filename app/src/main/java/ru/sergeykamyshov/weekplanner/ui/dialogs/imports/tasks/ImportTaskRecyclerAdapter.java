@@ -21,14 +21,14 @@ public class ImportTaskRecyclerAdapter extends RecyclerView.Adapter<ImportTaskRe
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_item_import_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_item_import_task, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.title.setText(mData.get(position).getTitle());
-        holder.container.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onTaskClick(mData.get(holder.getAdapterPosition()));
@@ -50,12 +50,10 @@ public class ImportTaskRecyclerAdapter extends RecyclerView.Adapter<ImportTaskRe
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ViewGroup container;
         TextView title;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            container = itemView.findViewById(R.id.container_card_title);
             title = itemView.findViewById(R.id.txt_card_title);
         }
     }

@@ -1,5 +1,6 @@
 package ru.sergeykamyshov.weekplanner.ui.dialogs.imports.cards;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,8 +28,10 @@ public class ImportCardRecyclerAdapter extends RecyclerView.Adapter<ImportCardRe
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        holder.cardTitle.setText(mData.get(position).getTitle());
-        holder.container.setOnClickListener(new View.OnClickListener() {
+        Card card = mData.get(position);
+        holder.cardColor.setBackgroundColor(Color.parseColor(card.getColor()));
+        holder.cardTitle.setText(card.getTitle());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onCardClick(mData.get(holder.getAdapterPosition()));
@@ -50,12 +53,12 @@ public class ImportCardRecyclerAdapter extends RecyclerView.Adapter<ImportCardRe
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ViewGroup container;
+        View cardColor;
         TextView cardTitle;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            container = itemView.findViewById(R.id.container_card_title);
+            cardColor = itemView.findViewById(R.id.v_card_color);
             cardTitle = itemView.findViewById(R.id.txt_card_title);
         }
     }
