@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Week Planner</string>
 
+    <!--Common-->
+    <string name="common_action_import">Import</string>
+    <string name="common_action_cancel">Cancel</string>
+
     <!--Заголовки-->
     <string name="title_next_week">Next week</string>
     <string name="title_archive">Archive</string>

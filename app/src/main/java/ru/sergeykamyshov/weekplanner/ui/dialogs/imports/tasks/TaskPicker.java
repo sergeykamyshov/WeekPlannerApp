@@ -1,6 +1,7 @@
 package ru.sergeykamyshov.weekplanner.ui.dialogs.imports.tasks;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -17,35 +18,36 @@ import java.util.UUID;
 
 import io.realm.Realm;
 import ru.sergeykamyshov.weekplanner.R;
-import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
 import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.ui.taskslist.CardActivity;
 
-public class TaskPicker extends DialogFragment implements OnTaskClickListener {
+public class TaskPicker extends DialogFragment {
 
     // ID карточки из которой выбираем задачу для импорта
     private String mImportCardId = "";
+    private ImportTaskRecyclerAdapter adapter;
+    private List<Task> tasks = new ArrayList<>();
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        List<Task> tasks = getTasks();
+        tasks = getTasks();
         if (tasks.isEmpty()) {
             dismiss();
         }
 
         // Создаем разметку для диалога
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_import, null);
+        View view = inflater.inflate(R.layout.dialog_import_tasks, null);
 
         TextView dialogTitle = view.findViewById(R.id.dialog_import_title);
         dialogTitle.setText(R.string.dialog_title_tasks);
 
         // Создаем и настраиваем адаптер
-        ImportTaskRecyclerAdapter adapter = new ImportTaskRecyclerAdapter();
+        adapter = new ImportTaskRecyclerAdapter();
         adapter.setData(tasks);
-        adapter.setListener(this);
 
         // Создаем и настраиваем RecyclerView
         RecyclerView recycler = view.findViewById(R.id.recycler_import);
@@ -53,17 +55,21 @@ public class TaskPicker extends DialogFragment implements OnTaskClickListener {
         recycler.setAdapter(adapter);
 
         // Создаем диалог с кастомным View
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setNegativeButton(getString(R.string.common_action_cancel), null)
+                .setPositiveButton(R.string.common_action_import, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        importTasks();
+                    }
+                });
         builder.setView(view);
         return builder.create();
     }
 
-    @Override
-    public void onTaskClick(Task task) {
+    private void importTasks() {
         Realm realm = Realm.getDefaultInstance();
-        // Копируем задачу
-        Task taskCopy = realm.copyFromRealm(task);
-        taskCopy.setId(UUID.randomUUID().toString());
+        realm.beginTransaction();
 
         // Загружаем карточку, в которую необходимо импортировать задачу
         String cardId = SharedPreferencesUtils.getCardIdForImportTask(getActivity());
@@ -71,8 +77,13 @@ public class TaskPicker extends DialogFragment implements OnTaskClickListener {
         if (card == null) {
             return;
         }
-        realm.beginTransaction();
-        card.addTask(taskCopy);
+
+        for (int position : adapter.getSelectedPositions()) {
+            // Копируем задачу
+            Task taskCopy = realm.copyFromRealm(tasks.get(position));
+            taskCopy.setId(UUID.randomUUID().toString());
+            card.addTask(taskCopy);
+        }
         realm.insertOrUpdate(card);
         realm.commitTransaction();
 
