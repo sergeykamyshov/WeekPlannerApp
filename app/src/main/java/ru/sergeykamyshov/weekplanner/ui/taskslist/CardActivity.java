@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
@@ -53,6 +54,7 @@ public class CardActivity extends AppCompatActivity {
     private CardRecyclerAdapter mAdapter;
     private String mCardId;
     private EmptyRecyclerView mRecyclerView;
+    private ItemTouchHelper mItemTouchHelper;
     private View mColorLine;
     private FrameLayout mDefaultToolbarLayout;
     private FrameLayout mEditToolbarLayout;
@@ -152,6 +154,11 @@ public class CardActivity extends AppCompatActivity {
 
                         showUndoSnackbar();
                     }
+
+                    @Override
+                    public void onDrag(RecyclerView.ViewHolder holder) {
+                        mItemTouchHelper.startDrag(holder);
+                    }
                 }
         );
         mRecyclerView.setAdapter(adapter);
@@ -160,8 +167,8 @@ public class CardActivity extends AppCompatActivity {
 
         // Добавляем возможность перемещать задачи в списке
         ItemTouchHelper.Callback itemTouchCallback = new TaskItemTouchHelper(mAdapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        mItemTouchHelper = new ItemTouchHelper(itemTouchCallback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         // Настраиваем ActionBar
         ActionBar actionBar = getSupportActionBar();

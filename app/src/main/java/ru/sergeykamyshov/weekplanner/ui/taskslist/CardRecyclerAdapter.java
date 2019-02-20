@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -17,7 +18,9 @@ import java.util.List;
 import java.util.Set;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import ru.sergeykamyshov.weekplanner.R;
+import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.utils.CardUtils;
 
@@ -29,7 +32,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     private List<Task> mTasks;
     private Callback mCallback;
     private LayoutInflater mLayoutInflater;
-    private Realm mRealm = Realm.getDefaultInstance();
 
     private boolean mSelectable = false;
     private Set<Task> mSelectedItems = new HashSet<>();
@@ -53,6 +55,8 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         void taskChanged(Task task);
 
         void onTaskDismiss(Task task, int position);
+
+        void onDrag(RecyclerView.ViewHolder holder);
     }
 
     @Override
@@ -120,6 +124,16 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             }
         });
 
+        holder.mDragImg.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    mCallback.onDrag(holder);
+                }
+                return false;
+            }
+        });
+
         return holder;
     }
 
@@ -170,10 +184,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         notifyDataSetChanged();
     }
 
-    void refresh() {
-        notifyDataSetChanged();
-    }
-
     void insertItemToPosition(Task task, int position) {
         mTasks.add(position, task);
         notifyItemInserted(position);
@@ -185,12 +195,20 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
-//        mRealm.beginTransaction();
-//        Task movedTask = mTasks.remove(fromPosition);
-//        mTasks.add(toPosition, movedTask);
-//        mRealm.commitTransaction();
-//
-//        notifyItemMoved(fromPosition, toPosition);
+        Realm realm = Realm.getDefaultInstance();
+
+        Card card = realm.where(Card.class).equalTo("id", mCardId).findFirst();
+        if (card == null) {
+            return;
+        }
+
+        realm.beginTransaction();
+        RealmList<Task> realmTasks = card.getTasks();
+        Task removedRealmTask = realmTasks.remove(fromPosition);
+        realmTasks.add(toPosition, removedRealmTask);
+        realm.commitTransaction();
+
+        notifyItemMoved(fromPosition, toPosition);
     }
 
     @Override
@@ -212,7 +230,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
         CheckBox mIsDone;
         TextView mTaskTitle;
-        ImageView mMoreImg;
+        ImageView mDragImg;
         View mViewForeground;
         View mViewBackgroundDone;
         View mViewBackgroundUndone;
@@ -222,7 +240,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             super(itemView);
             mIsDone = itemView.findViewById(R.id.cb_is_done);
             mTaskTitle = itemView.findViewById(R.id.txt_task_title);
-            mMoreImg = itemView.findViewById(R.id.img_more);
+            mDragImg = itemView.findViewById(R.id.img_drag);
             mViewForeground = itemView.findViewById(R.id.layout_task_foreground);
             mViewBackgroundDone = itemView.findViewById(R.id.layout_task_done_background);
             mViewBackgroundUndone = itemView.findViewById(R.id.layout_task_undone_background);
