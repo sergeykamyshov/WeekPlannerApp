@@ -1,16 +1,17 @@
 package ru.sergeykamyshov.weekplanner.ui.task;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import java.util.UUID;
 
 import io.realm.Realm;
-import ru.sergeykamyshov.weekplanner.ui.base.Presenter;
-import ru.sergeykamyshov.weekplanner.ui.task.TaskActivity;
 import ru.sergeykamyshov.weekplanner.data.db.model.Card;
 import ru.sergeykamyshov.weekplanner.data.db.model.Task;
 import ru.sergeykamyshov.weekplanner.data.prefs.SharedPreferencesUtils;
+import ru.sergeykamyshov.weekplanner.ui.base.Presenter;
 
 public class TaskPresenter implements Presenter {
 
@@ -20,6 +21,7 @@ public class TaskPresenter implements Presenter {
 
     private String mTaskId;
     private int mTaskPosition;
+    private boolean addNewTaskToStart = false;
 
     public TaskPresenter(String cardId, String taskId, int taskPosition) {
         mCardId = cardId;
@@ -30,6 +32,9 @@ public class TaskPresenter implements Presenter {
     @Override
     public void attachView(AppCompatActivity activity) {
         mView = (TaskActivity) activity;
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mView);
+        addNewTaskToStart = prefs.getBoolean("pref_add_new_task_to_start", false);
     }
 
     @Override
@@ -83,7 +88,11 @@ public class TaskPresenter implements Presenter {
                 if (card != null) {
                     Task task = realm.createObject(Task.class, UUID.randomUUID().toString());
                     task.setTitle(taskTitle);
-                    card.addTask(task);
+                    if (addNewTaskToStart) {
+                        card.addTask(0, task);
+                    } else {
+                        card.addTask(task);
+                    }
                     realm.insertOrUpdate(card);
                 }
             }

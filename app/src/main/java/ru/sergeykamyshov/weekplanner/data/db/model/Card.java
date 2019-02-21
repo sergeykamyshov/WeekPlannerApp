@@ -68,4 +68,8 @@ public class Card extends RealmObject {
     public void addTask(Task task) {
         tasks.add(task);
     }
+
+    public void addTask(int position, Task task) {
+        tasks.add(position, task);
+    }
 }

@@ -92,4 +92,6 @@
     </string-array>
     <string name="pref_generate_card_color_title">Генерировать цвета</string>
     <string name="pref_generate_card_color_desc">Автоматически генерировать цвет при создании новой карточки</string>
+    <string name="pref_add_task_to_top_title">Новая задача в начале списка</string>
+    <string name="pref_add_task_to_top_desc">Добавлять новую задачу в начало списка</string>
 </resources>
