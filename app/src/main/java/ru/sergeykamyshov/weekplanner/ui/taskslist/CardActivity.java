@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +136,16 @@ public class CardActivity extends AppCompatActivity {
                     }
 
                     @Override
+                    public void selectedTasksChanged(Set<Task> tasks) {
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        for (Task task : tasks) {
+                            realm.insertOrUpdate(task);
+                        }
+                        realm.commitTransaction();
+                    }
+
+                    @Override
                     public void onTaskDismiss(Task task, int position) {
                         // Сохраняем данные перед обновлением
                         saveUndoData(task, position);
@@ -238,12 +247,9 @@ public class CardActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.action_check_all_tasks:
-                Toast.makeText(this, "Check all tasks", Toast.LENGTH_SHORT).show();
                 mAdapter.checkSelectedItems(true);
                 return true;
             case R.id.action_delete_all_tasks:
-                Toast.makeText(this, "Delete all tasks", Toast.LENGTH_SHORT).show();
-
                 Realm realm = Realm.getDefaultInstance();
                 realm.beginTransaction();
                 Set<Task> selectedItems = mAdapter.getSelectedItems();

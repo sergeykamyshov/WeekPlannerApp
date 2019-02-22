@@ -54,6 +54,8 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
         void taskChanged(Task task);
 
+        void selectedTasksChanged(Set<Task> tasks);
+
         void onTaskDismiss(Task task, int position);
 
         void onDrag(RecyclerView.ViewHolder holder);
@@ -160,6 +162,8 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         for (Task task : mSelectedItems) {
             task.setDone(checked);
         }
+        // В некоторых случаях checkbox listener перезаписывают друг друга, поэтому сохраняем каждый объект явно
+        mCallback.selectedTasksChanged(mSelectedItems);
         cancelSelect();
     }
 
@@ -201,12 +205,14 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         if (card == null) {
             return;
         }
-
         realm.beginTransaction();
         RealmList<Task> realmTasks = card.getTasks();
         Task removedRealmTask = realmTasks.remove(fromPosition);
         realmTasks.add(toPosition, removedRealmTask);
         realm.commitTransaction();
+
+        Task removedTask = mTasks.remove(fromPosition);
+        mTasks.add(toPosition, removedTask);
 
         notifyItemMoved(fromPosition, toPosition);
     }

@@ -91,6 +91,6 @@
     </string-array>
     <string name="pref_generate_card_color_title">Generate color</string>
     <string name="pref_generate_card_color_desc">Automatically generate random color for new card</string>
-    <string name="pref_add_task_to_top_title">New task to start</string>
+    <string name="pref_add_task_to_top_title">New task to top</string>
     <string name="pref_add_task_to_top_desc">Add a new task to the top of the list</string>
 </resources>
