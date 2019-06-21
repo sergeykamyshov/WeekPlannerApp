@@ -119,6 +119,7 @@ public class CardTitleActivity extends AppCompatActivity {
     public void setCardTitleOnOpen() {
         mTitle.setText(mCardTitle);
         mTitle.setSelection(mTitle.getText().length());
+        mTitle.requestFocus();
     }
 
     public void cancelCardTitleAction(View view) {

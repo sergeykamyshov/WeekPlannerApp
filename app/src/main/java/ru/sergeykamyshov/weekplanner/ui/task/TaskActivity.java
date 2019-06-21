@@ -58,6 +58,7 @@ public class TaskActivity extends AppCompatActivity {
         String taskTitle = mPresenter.getTaskTitle();
         mTaskTitleEditText.setText(taskTitle);
         mTaskTitleEditText.setSelection(taskTitle.length());
+        mTaskTitleEditText.requestFocus();
     }
 
     @Override
